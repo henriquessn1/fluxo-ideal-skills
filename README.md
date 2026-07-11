@@ -37,7 +37,8 @@ Cada skill serve aos dois públicos no mesmo arquivo — a diferença está na d
 | [medico](skills/medico/SKILL.md) | Médico (assistencial) | conduzir + documentar o atendimento (adendo write-only), fila do dia — **IA nunca lê prontuário** | ✅ |
 | [designer-documentos](skills/designer-documentos/SKILL.md) | Documentos | templates (sistema × design), conteúdo/versão, simular, publicar, documentos por paciente | ✅ |
 | [designer-mensageria](skills/designer-mensageria/SKILL.md) | Comunicação | templates, canais (WhatsApp/HSM, e-mail), enviar por intenção, checar entrega | ✅ |
-| [financeiro](skills/financeiro/SKILL.md) | O dinheiro depois | pagamentos, parcelas, contas a receber/pagar, caixa, fluxo de caixa, break-even | ✅ |
+| [financeiro](skills/financeiro/SKILL.md) | O dinheiro depois | pagamentos, parcelas, contas a receber/pagar, caixa, fluxo de caixa, break-even, nota fiscal | ✅ |
+| [faturamento-convenio](skills/faturamento-convenio/SKILL.md) | Financeiro de convênio (TISS) | faturar guias/lotes, demonstrativo, glosa, recurso | ✅ |
 | [designer-agentes](skills/designer-agentes/SKILL.md) | Agentes de IA | desenhar comportamento (persona, capacidades, gatilhos, LLM × script) | ✅ |
 | [conversas](skills/conversas/SKILL.md) | Atender/triar tickets | filas, atribuição, resolução (CSAT), transferência, observadores, detectar frustração | ✅ |
 | [pesquisas-satisfacao](skills/pesquisas-satisfacao/SKILL.md) | CX / NPS | pesquisa e gatilhos, funil de convites, reenviar/antecipar, resultados agregados (NPS) | ✅ |
