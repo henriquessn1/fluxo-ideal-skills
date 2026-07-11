@@ -3,8 +3,8 @@ name: secretaria
 description: O papel de recepção do Fluxo Ideal — cadastrar e encontrar pacientes, agendar/remarcar/cancelar, ler a agenda do dia e a disponibilidade de horários, e acompanhar o histórico de relacionamento. Use para "quem é esse paciente?", "tem horário quinta?", "marca o retorno da Maria", "quem faltou hoje?".
 audience: [ia, humano]
 depends_on: [clientes, agenda, conversas]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-11
 ---
 
 # Secretária
@@ -103,8 +103,13 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
   precisar.
 - Cadastrar um paciente novo ou atualizar um existente → ferramenta de upsert de cliente. O **CPF**
   só entra na **criação** (é a identidade); correção de CPF é caso administrativo, fora daqui.
-- Suspeita de cadastro duplicado (antes de criar, ou para investigar) → ferramenta de análise de
-  duplicados. **Ela só analisa — não junta cadastros.** Mesclar é operação fora deste papel.
+- Gerir o **convênio/carteirinha** do paciente (adicionar/editar/remover, e o fluxo de solicitação)
+  → ferramentas de convênio do cliente.
+- **Tags**, **relacionamentos** (responsável/dependente) e marcar o cadastro como **revisado**
+  → ferramentas de gestão do cadastro.
+- Suspeita de cadastro duplicado → ferramenta de **análise de duplicados** (só analisa/recomenda) e,
+  quando estiver confiante, a ferramenta de **mesclar** — **com guarda**: ensaio (dry-run) +
+  confirmação explícita, e só acima de **alta similaridade**. Mesclar é **irreversível** — nunca no chute.
 
 **Agenda — ler**
 - Ver o que está marcado (por período/profissional/paciente/status) → ferramenta de busca de
@@ -127,11 +132,17 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
 - Confirmar / registrar chegada / registrar falta / finalizar → ferramenta de mudança de estado.
 - Cancelar (com motivo obrigatório; pode já sugerir horários para remarcar) → ferramenta de
   cancelamento.
+- **Bloquear** a agenda (almoço, férias, feriado), inclusive **recorrente** → ferramenta de bloqueio.
+- Abrir um **encaixe / horário extra** → ferramenta de agenda extra.
 
 **Relacionamento**
 - Linha do tempo de um paciente ("o que já rolou com ele?") → ferramenta de histórico do cliente.
 - Procurar interações por critério ("mensagens de WhatsApp hoje", "cancelamentos desta semana")
   → ferramenta de busca de interações.
+
+**A caminho** (backend pronto, ferramenta chegando): **RSVP** do paciente (confirmação bidirecional),
+**visão do dia** consolidada de toda a clínica (cross-profissional), **lista de espera** com alerta de
+encaixe (match), e a **fila de retornos vencidos**.
 
 ## Fluxos comuns
 
@@ -172,8 +183,8 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
 - **Identifique antes de agir.** Toda ação de agenda pressupõe paciente e profissional resolvidos.
 - **Minimização de dados**: buscas vêm sem contato; a ficha completa é passo explícito e auditado.
   Nunca exponha PII que não foi pedida.
-- **Um paciente, um cadastro.** Cheque duplicados antes de criar. Esta skill **não mescla**
-  cadastros — mesclar é operação sensível e irreversível fora deste papel.
+- **Um paciente, um cadastro.** Cheque duplicados antes de criar. **Mesclar é possível — mas com
+  guarda**: ensaio + confirmação + só com alta similaridade. É **irreversível**, então nunca no chute.
 - **CPF é identidade**: só se define na criação; não se "corrige" pelo fluxo normal.
 - **Agendamento pré-valida habilitação**: marcar/remarcar checa se o profissional atende aquilo
   ali antes de gravar. Validação falhou = não marca (não force).
@@ -188,8 +199,8 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
 ## Limites / o que esta skill NÃO cobre
 - **Preço / orçamento / pagamento** → `precificador` (montar valor) e `financeiro` (o dinheiro).
 - **Conteúdo clínico** (prontuário, evolução, receitas, atestados) → `auxiliar-medico`.
-- **Mesclar cadastros duplicados**, editar CPF, apagar registros — operações administrativas
-  sensíveis, fora do papel de recepção.
+- **Editar CPF, apagar registros** — operações administrativas sensíveis, fora do papel de recepção.
+  (Mesclar duplicados agora é possível, **com guarda** — ver Regras.)
 - **Gestão de tickets/filas de atendimento** (resolver, transferir, atribuir conversas) é um
   subdomínio próprio orientado a equipe/automação — esta skill só **lê** conversas para dar
   contexto; a operação da fila não é escopo de recepção.
