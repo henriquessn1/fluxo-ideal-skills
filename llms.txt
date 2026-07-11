@@ -10,6 +10,7 @@
 - [precificador](skills/precificador/SKILL.md): o sistema de precificação — catálogo, tabelas de preço, condições e formas de pagamento, favoritos, cobertura de convênio/coparticipação, e como tudo converge em orçamento e venda.
 - [secretaria](skills/secretaria/SKILL.md): recepção e agenda — cadastrar/encontrar pacientes, marcar/remarcar/cancelar, disponibilidade de horários e contexto de conversas.
 - [auxiliar-medico](skills/auxiliar-medico/SKILL.md): o fluxo operacional do atendimento — check-in, etapas de estado, comentários da equipe, pendências e métricas.
+- [medico](skills/medico/SKILL.md): o papel médico assistido por IA — conduzir e documentar o atendimento (adendo write-only), ver a fila do dia; a IA nunca lê o prontuário.
 - [designer-documentos](skills/designer-documentos/SKILL.md): desenhar e gerir documentos — templates (sistema × design), conteúdo/versão, simular, publicar e documentos gerados por paciente.
 - [designer-mensageria](skills/designer-mensageria/SKILL.md): desenhar a comunicação com o paciente — templates, canais (WhatsApp/HSM, e-mail), enviar por intenção e checar entrega.
 - [financeiro](skills/financeiro/SKILL.md): o dinheiro depois da venda — pagamentos, parcelas, contas a receber/pagar, caixa, fluxo de caixa e ponto de equilíbrio.

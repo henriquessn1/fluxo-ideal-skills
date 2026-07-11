@@ -33,7 +33,8 @@ Cada skill serve aos dois públicos no mesmo arquivo — a diferença está na d
 |---|---|---|---|
 | [precificador](skills/precificador/SKILL.md) | Configurar preço → orçamento/venda | catálogo, tabelas de preço, condições e formas de pagamento, favoritos, cobertura de convênio, orçamento, venda | ✅ |
 | [secretaria](skills/secretaria/SKILL.md) | Recepção / agenda | cadastro de paciente, agenda (marcar/remarcar/cancelar), disponibilidade, contexto de conversas | ✅ |
-| [auxiliar-medico](skills/auxiliar-medico/SKILL.md) | Atendimento clínico | check-in, etapas do atendimento, comentários da equipe, pendências, métricas | ✅ |
+| [auxiliar-medico](skills/auxiliar-medico/SKILL.md) | Atendimento clínico (operacional) | check-in, etapas do atendimento, comentários da equipe, pendências, métricas | ✅ |
+| [medico](skills/medico/SKILL.md) | Médico (assistencial) | conduzir + documentar o atendimento (adendo write-only), fila do dia — **IA nunca lê prontuário** | ✅ |
 | [designer-documentos](skills/designer-documentos/SKILL.md) | Documentos | templates (sistema × design), conteúdo/versão, simular, publicar, documentos por paciente | ✅ |
 | [designer-mensageria](skills/designer-mensageria/SKILL.md) | Comunicação | templates, canais (WhatsApp/HSM, e-mail), enviar por intenção, checar entrega | ✅ |
 | [financeiro](skills/financeiro/SKILL.md) | O dinheiro depois | pagamentos, parcelas, contas a receber/pagar, caixa, fluxo de caixa, break-even | ✅ |
