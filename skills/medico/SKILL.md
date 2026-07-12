@@ -3,8 +3,8 @@ name: medico
 description: O papel médico assistido por IA no Fluxo Ideal — conduzir e DOCUMENTAR o atendimento (adendo write-only) sem que a IA jamais leia o prontuário. Use para registrar evolução, mover o atendimento e ver a fila, com o clínico protegido.
 audience: [ia, humano]
 depends_on: [atendimento, evolucao-write-only]
-version: 0.1.0
-updated: 2026-07-11
+version: 0.2.0
+updated: 2026-07-12
 ---
 
 # Médico
@@ -48,15 +48,17 @@ Escrever ≠ ler. Toda a proteção vem daí: a documentação flui numa via de 
 ## Ferramentas (tarefa → ferramenta)
 > Escrita confirma; leitura de conteúdo clínico é **proibida por desenho**.
 
-**Hoje, por ferramenta (operacional):**
+**Hoje, por ferramenta — operacional:**
 - Mover a etapa do atendimento (em atendimento / finalizar) → ferramenta de mudança de estado.
 - Anotar recado operacional da equipe → ferramenta de comentário (não é prontuário).
 - Ver minhas pendências (contagens/refs, sem conteúdo) e métricas → ferramentas de pendências/métricas.
 - Ver a fila/agenda do meu dia → ferramentas de agenda/atendimento do dia.
 
-**A caminho (write-only):**
-- Anexar um **adendo/evolução** ao atendimento → ferramenta de adendo **write-only** (anexa; não
-  devolve o conteúdo). *Em implementação.*
+**Hoje, por ferramenta — documentação (write-only):**
+- Anexar um **adendo/evolução** ao atendimento → ferramenta de adendo **write-only**: você dita/registra
+  e ela devolve **só a confirmação** (id/status), **nunca o conteúdo** — nem o que você acabou de escrever.
+- Registrar o **desfecho** do atendimento (**alta / retorno / encaminhamento** a especialidade/exame)
+  → ferramenta de desfecho (estruturado, validado por tipo). A **autoria é sua**, cravada do login.
 
 **Nunca (por desenho):** ler prontuário, evolução, diagnóstico, resultado de exame ou qualquer
 síntese clínica.
