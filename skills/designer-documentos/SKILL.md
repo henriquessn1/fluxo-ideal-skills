@@ -3,7 +3,7 @@ name: designer-documentos
 description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Use para entender "como esse documento fica" e para criar/editar/publicar um template com segurança.
 audience: [ia, humano]
 depends_on: [documentos, templates, catalogo-documentos]
-version: 0.2.0
+version: 0.2.1
 updated: 2026-07-12
 ---
 
@@ -78,9 +78,11 @@ Quatro ideias sustentam tudo:
 - **Tipo de documento**: a categoria — receita, atestado, laudo, orçamento, TCLE… É o que o profissional
   escolhe antes de emitir.
 - **Estrutura de dados**: quais campos o modelo espera preencher (o "formulário" por trás do documento),
-  identificada por nome + versão. Pode declarar **campos de digitação (input)** — com tipo (texto/data/…),
-  rótulo e obrigatoriedade — que a **tela de emissão** mostra para preencher (ex.: uma observação para o
-  paciente, outra para a empresa).
+  identificada por nome + versão. Inclui os **campos de digitação** que a **tela de emissão** mostra para
+  preencher — cada campo tem **nome** (a variável), **rótulo**, um **tipo** (texto, área de texto, data,
+  seleção, etc.), **obrigatoriedade**, **grupo** (é o grupo que separa, por ex., a *observação do paciente*
+  da *observação da empresa*) e **opções** quando é seleção. Esse contrato de tela é **rico e pertence à
+  interface** — a plataforma o guarda **como está**, sem simplificar; a tela de emissão **já o renderiza**.
 - **Vínculo tipo↔template**: a ligação que diz "este tipo usa **este** modelo" (digital e/ou impresso) com
   **esta** estrutura de dados. É o que torna um tipo realmente emissível quando **ativo**.
 - **Ativo/inativo**: um recurso do catálogo só entra na geração real quando **ativado**; nasce inativo.
@@ -133,8 +135,10 @@ Quatro ideias sustentam tudo:
   ferramenta que **gerencia o catálogo**. Criar/vincular/definir dados **nascem inativos** (reversível, em
   pré-visualização por padrão). **Ativar** torna o recurso emissível → **exige confirmação**.
 - **Definir os campos de digitação** do documento (o que o operador preenche na emissão — ex.: observação
-  para o paciente e outra para a empresa) → na estrutura de dados, declare os **campos de input** (tipo,
-  rótulo, obrigatoriedade). É o que faz a tela de emissão mostrar esses campos.
+  para o paciente e outra para a empresa) → **edite a estrutura de dados** com os campos no **contrato real**
+  (nome, rótulo, tipo, obrigatório, **grupo**, opções) — passe a estrutura **como ela é**, sem inventar
+  formato. Ao **ler** o template, os **campos de tela** vêm junto (inspeção). A tela de emissão **já
+  renderiza** esses campos — não é preciso mexer no front.
 - **Montar/gerir um modelo (bundle)** — o invólucro que junta corpo **digital** + corpo **impresso** +
   estrutura de dados como uma unidade → ferramentas de **modelo** (listar/gerir). Só HTML/DB — **DOCX e
   HTML-em-disco ficam fora**.
@@ -178,10 +182,11 @@ Quatro ideias sustentam tudo:
 
 ### Criar um documento com campos de digitação (ex.: atestado com observação)
 1. **Crie o tipo** (atestado) e defina a **estrutura de dados**.
-2. **Declare os campos de input** que o operador vai preencher na emissão — ex.: *observação para o
-   paciente* e *observação para a empresa* — com tipo, rótulo e se é obrigatório.
+2. **Declare os campos** na estrutura, no contrato real — nome, rótulo, **tipo** (texto/área de texto/
+   data/seleção…), obrigatório, e **grupo** (é o grupo que separa *observação do paciente* × *observação
+   da empresa*); opções, se for seleção. Passe a estrutura **como ela é**.
 3. **Desenhe o conteúdo** do template referenciando os dados do paciente **+** esses campos.
-4. **Simule** e **publique**. Na emissão, a tela mostra os campos para o operador digitar.
+4. **Simule** e **publique**. A **tela de emissão já mostra** os campos para o operador digitar.
 
 ### Trocar um logo/imagem do design
 1. **Envie** o asset novo (ou liste os existentes).
