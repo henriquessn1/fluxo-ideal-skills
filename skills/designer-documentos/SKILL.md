@@ -3,8 +3,8 @@ name: designer-documentos
 description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Use para entender "como esse documento fica" e para criar/editar/publicar um template com segurança.
 audience: [ia, humano]
 depends_on: [documentos, templates, catalogo-documentos]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-12
 ---
 
 # Designer de Documentos
@@ -78,7 +78,9 @@ Quatro ideias sustentam tudo:
 - **Tipo de documento**: a categoria — receita, atestado, laudo, orçamento, TCLE… É o que o profissional
   escolhe antes de emitir.
 - **Estrutura de dados**: quais campos o modelo espera preencher (o "formulário" por trás do documento),
-  identificada por nome + versão.
+  identificada por nome + versão. Pode declarar **campos de digitação (input)** — com tipo (texto/data/…),
+  rótulo e obrigatoriedade — que a **tela de emissão** mostra para preencher (ex.: uma observação para o
+  paciente, outra para a empresa).
 - **Vínculo tipo↔template**: a ligação que diz "este tipo usa **este** modelo" (digital e/ou impresso) com
   **esta** estrutura de dados. É o que torna um tipo realmente emissível quando **ativo**.
 - **Ativo/inativo**: um recurso do catálogo só entra na geração real quando **ativado**; nasce inativo.
@@ -113,8 +115,10 @@ Quatro ideias sustentam tudo:
 **Descobrir e ler o design**
 - **Ver o catálogo de design** (tipos + vínculos tipo↔template, com status e versão) → ferramenta que
   **lista os templates de design**. É o **ponto de partida** para editar um modelo ou montar um tipo novo.
-- **Ler UM modelo** (suas versões e o HTML de uma versão; opcionalmente o vínculo e a estrutura de dados)
-  → ferramenta que **lê o template**.
+- **Ler UM modelo** (suas versões e o HTML de uma versão; opcionalmente o vínculo e a estrutura de dados,
+  **incluindo os campos de tela**) → ferramenta que **lê o template**.
+- **Ver quais variáveis/placeholders** um modelo espera (validar o template × a estrutura de dados)
+  → ferramenta que **lista as variáveis** do template.
 
 **Editar conteúdo com segurança**
 - **Criar/editar um rascunho** de conteúdo do modelo → ferramenta que **faz upsert do conteúdo**. Sem
@@ -125,13 +129,20 @@ Quatro ideias sustentam tudo:
 - **Publicar a versão oficial** → ferramenta que **publica**. Alcance amplo → **exige confirmação humana**.
 
 **Montar o catálogo (tipo novo)**
-- **Criar tipo, definir a estrutura de dados, vincular tipo↔template, ativar/desativar** → ferramenta que
-  **gerencia o catálogo**. Criar/vincular/definir dados **nascem inativos** (reversível, em pré-visualização
-  por padrão). **Ativar** torna o recurso emissível → **exige confirmação**.
+- **Criar/editar tipo, definir/editar a estrutura de dados, vincular tipo↔template, ativar/desativar** →
+  ferramenta que **gerencia o catálogo**. Criar/vincular/definir dados **nascem inativos** (reversível, em
+  pré-visualização por padrão). **Ativar** torna o recurso emissível → **exige confirmação**.
+- **Definir os campos de digitação** do documento (o que o operador preenche na emissão — ex.: observação
+  para o paciente e outra para a empresa) → na estrutura de dados, declare os **campos de input** (tipo,
+  rótulo, obrigatoriedade). É o que faz a tela de emissão mostrar esses campos.
+- **Montar/gerir um modelo (bundle)** — o invólucro que junta corpo **digital** + corpo **impresso** +
+  estrutura de dados como uma unidade → ferramentas de **modelo** (listar/gerir). Só HTML/DB — **DOCX e
+  HTML-em-disco ficam fora**.
 
 **Gerir imagens do design**
-- **Listar/enviar/excluir assets** (logos/imagens) → ferramenta que **gerencia assets**. Excluir um asset
-  **em uso** exige confirmação/forçar (o sistema mostra onde ele é referenciado).
+- **Listar/enviar/excluir assets** (logos/imagens) e **ver onde um asset é usado** (antes de excluir)
+  → ferramenta que **gerencia assets** (+ consulta de uso). Excluir um asset **em uso** exige
+  confirmação/forçar (o sistema mostra onde ele é referenciado).
 
 **Modelos de sistema (Orçamento e TCLE)**
 - **Listar os modelos de sistema** e ver se estão publicados → ferramenta que **lista os templates de
@@ -142,9 +153,9 @@ Quatro ideias sustentam tudo:
 **Do lado do paciente (leitura)**
 - **Quais modelos um profissional pode emitir** → ferramenta que **lista os templates disponíveis** para
   o profissional.
-- **Quais documentos um atendimento já tem** ("a receita foi gerada?") → ferramenta que **lista os
-  documentos do paciente**. Devolve a lista (nome, tamanho, data, tipo) — **sem** link de download;
-  abrir/baixar é pela Central.
+- **Quais documentos um paciente (ou um atendimento) já tem** ("a receita foi gerada?") → ferramenta que
+  **lista os documentos** por **paciente** ou por **atendimento**. Devolve a lista (nome, tamanho, data,
+  tipo) — **sem** link de download nem chave interna do arquivo; abrir/baixar é pela Central.
 
 ## Fluxos comuns
 
@@ -164,6 +175,13 @@ Quatro ideias sustentam tudo:
 4. **Vincule** o tipo ao(s) template(s) — digital e/ou impresso — com a estrutura de dados (nasce inativo).
 5. **Simule** para conferir.
 6. **Ative** o vínculo (confirmação) — só então o tipo fica emissível na geração real.
+
+### Criar um documento com campos de digitação (ex.: atestado com observação)
+1. **Crie o tipo** (atestado) e defina a **estrutura de dados**.
+2. **Declare os campos de input** que o operador vai preencher na emissão — ex.: *observação para o
+   paciente* e *observação para a empresa* — com tipo, rótulo e se é obrigatório.
+3. **Desenhe o conteúdo** do template referenciando os dados do paciente **+** esses campos.
+4. **Simule** e **publique**. Na emissão, a tela mostra os campos para o operador digitar.
 
 ### Trocar um logo/imagem do design
 1. **Envie** o asset novo (ou liste os existentes).
