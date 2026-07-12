@@ -3,7 +3,7 @@ name: designer-mensageria
 description: A comunicação da clínica com o paciente no Fluxo Ideal — templates de mensagem (assunto + corpo com variáveis), canais (e-mail, WhatsApp), e as duas formas de falar com o paciente: enviar AGORA por um template ou emitir uma INTENÇÃO governada (a plataforma decide quando entregar). Use para escrever/ajustar textos que vão ao paciente, disparar um e-mail, mandar um aviso automático e checar se a mensagem foi entregue.
 audience: [ia, humano]
 depends_on: [mensagens, templates, canais, entrega]
-version: 0.2.0
+version: 0.2.1
 updated: 2026-07-12
 ---
 
@@ -127,8 +127,10 @@ Ideias que sustentam tudo:
 - **Gerir por quais canais** um template pode sair (permitir/bloquear um canal, ligar/desligar a versão
   de um canal) → a ferramenta de **canais do template**.
 - **Ver o status de aprovação do HSM (WhatsApp)** na Meta — *aprovado, pendente ou rejeitado* → a
-  ferramenta de **status HSM**. É **só leitura**: **submeter** um template novo para a Meta aprovar
-  **não** é por aqui (é passo de operação, fora da IA).
+  ferramenta de **status HSM** (só leitura).
+- **Submeter um template novo para a Meta aprovar** (em vez do Business Manager) → *a caminho*. Será
+  **com confirmação humana** (a IA monta e mostra a prévia; você aprova antes de submeter), porque é um
+  **ato perante a Meta** e rejeições em excesso pesam na qualidade do número.
 - **Enviar um e-mail pontual ao paciente agora** → a ferramenta de **envio de e-mail**: escolha o
   destinatário (o paciente cadastrado, cujo contato a plataforma resolve, **ou** um endereço direto), o
   template e as variáveis. É **ação real** — confirme com o usuário antes.
@@ -203,7 +205,7 @@ Ideias que sustentam tudo:
   de conversas/tickets.
 - Não cobre **pesquisa de satisfação/NPS** → skill de pesquisas.
 - **Criar template, editar metadados (política de remetente), ativar/desativar e gerir canais** agora
-  são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **submeter** o HSM para a
-  Meta aprovar (é passo de operação), **envio em massa** (broadcast) e **anexos**.
+  são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **envio em
+  massa** (broadcast) e **anexos**. **Submeter o HSM à Meta** está **a caminho** (com confirmação humana).
 - Não expõe **como** as mensagens são roteadas, enfileiradas ou entregues por dentro — só **como
   desenhá-las, dispará-las e conferi-las**.
