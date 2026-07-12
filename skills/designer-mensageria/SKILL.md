@@ -3,8 +3,8 @@ name: designer-mensageria
 description: A comunicação da clínica com o paciente no Fluxo Ideal — templates de mensagem (assunto + corpo com variáveis), canais (e-mail, WhatsApp), e as duas formas de falar com o paciente: enviar AGORA por um template ou emitir uma INTENÇÃO governada (a plataforma decide quando entregar). Use para escrever/ajustar textos que vão ao paciente, disparar um e-mail, mandar um aviso automático e checar se a mensagem foi entregue.
 audience: [ia, humano]
 depends_on: [mensagens, templates, canais, entrega]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-12
 ---
 
 # Designer de Mensageria
@@ -122,6 +122,13 @@ Ideias que sustentam tudo:
 - **Ajustar o texto (assunto/corpo) de um template existente** → a ferramenta que **edita o conteúdo do
   template** — sempre em **prévia primeiro** (valida e mostra o render sem gravar); grava só na
   confirmação. Muda os **próximos** envios daquele template.
+- **Criar um template novo, ajustar seus metadados** (ex.: política de remetente) e **ativar/desativar**
+  → a ferramenta de **autoria de template**. Prévia primeiro; grava na confirmação.
+- **Gerir por quais canais** um template pode sair (permitir/bloquear um canal, ligar/desligar a versão
+  de um canal) → a ferramenta de **canais do template**.
+- **Ver o status de aprovação do HSM (WhatsApp)** na Meta — *aprovado, pendente ou rejeitado* → a
+  ferramenta de **status HSM**. É **só leitura**: **submeter** um template novo para a Meta aprovar
+  **não** é por aqui (é passo de operação, fora da IA).
 - **Enviar um e-mail pontual ao paciente agora** → a ferramenta de **envio de e-mail**: escolha o
   destinatário (o paciente cadastrado, cujo contato a plataforma resolve, **ou** um endereço direto), o
   template e as variáveis. É **ação real** — confirme com o usuário antes.
@@ -180,6 +187,9 @@ Ideias que sustentam tudo:
 - **Nunca coloque dado pessoal na chave de idempotência.**
 - **Texto verificado (HSM) não vira texto livre** — em canais verificados, preencha variáveis; não
   reescreva o conteúdo aprovado (risco de phishing/bloqueio).
+- **O vínculo do HSM com a Meta é sagrado** — ao ativar/desativar ou editar a versão de um canal
+  verificado, a plataforma **preserva** o vínculo aprovado. Apagá-lo derruba a aprovação na Meta e o
+  template **para de sair**. (Submeter um HSM novo à Meta não é pela IA — só **consultar** o status.)
 - **Regra de ouro do remetente** — quando escolhível, o remetente é o **e-mail do próprio usuário
   logado**; alguns templates exigem isso por política.
 - **Templates críticos/transacionais** (verificação, código, link mágico, convite de pesquisa) exigem
@@ -192,8 +202,8 @@ Ideias que sustentam tudo:
 - Não cobre a **conversa/ticket** com o paciente (thread, atribuição, resolução, nota interna) → skill
   de conversas/tickets.
 - Não cobre **pesquisa de satisfação/NPS** → skill de pesquisas.
-- Não cobre **criação/exclusão de template**, mudança de metadados (política de remetente,
-  ativar/desativar), gestão de quais canais são permitidos, envio em massa (broadcast) nem anexos —
-  isso é administração estrutural feita na interface da clínica.
+- **Criar template, editar metadados (política de remetente), ativar/desativar e gerir canais** agora
+  são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **submeter** o HSM para a
+  Meta aprovar (é passo de operação), **envio em massa** (broadcast) e **anexos**.
 - Não expõe **como** as mensagens são roteadas, enfileiradas ou entregues por dentro — só **como
   desenhá-las, dispará-las e conferi-las**.
