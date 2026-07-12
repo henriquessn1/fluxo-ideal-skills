@@ -3,7 +3,7 @@ name: designer-mensageria
 description: A comunicação da clínica com o paciente no Fluxo Ideal — templates de mensagem (assunto + corpo com variáveis), canais (e-mail, WhatsApp), e as duas formas de falar com o paciente: enviar AGORA por um template ou emitir uma INTENÇÃO governada (a plataforma decide quando entregar). Use para escrever/ajustar textos que vão ao paciente, disparar um e-mail, mandar um aviso automático e checar se a mensagem foi entregue.
 audience: [ia, humano]
 depends_on: [mensagens, templates, canais, entrega]
-version: 0.2.1
+version: 0.3.0
 updated: 2026-07-12
 ---
 
@@ -128,9 +128,11 @@ Ideias que sustentam tudo:
   de um canal) → a ferramenta de **canais do template**.
 - **Ver o status de aprovação do HSM (WhatsApp)** na Meta — *aprovado, pendente ou rejeitado* → a
   ferramenta de **status HSM** (só leitura).
-- **Submeter um template novo para a Meta aprovar** (em vez do Business Manager) → *a caminho*. Será
-  **com confirmação humana** (a IA monta e mostra a prévia; você aprova antes de submeter), porque é um
-  **ato perante a Meta** e rejeições em excesso pesam na qualidade do número.
+- **Submeter um template novo para a Meta aprovar** (em vez do Business Manager) → a ferramenta de
+  **submissão de HSM**. Ela **valida as regras da Meta antes** (barra template mal-formado, protegendo a
+  nota do número), roda em **prévia por padrão** e só submete com **confirmação humana**. A ferramenta de
+  **listar HSM** acompanha os enviados à Meta (junto com o **status HSM**: aprovado/pendente/rejeitado).
+  *Deletar* um HSM na Meta é a caminho (follow-up).
 - **Enviar um e-mail pontual ao paciente agora** → a ferramenta de **envio de e-mail**: escolha o
   destinatário (o paciente cadastrado, cujo contato a plataforma resolve, **ou** um endereço direto), o
   template e as variáveis. É **ação real** — confirme com o usuário antes.
@@ -191,7 +193,8 @@ Ideias que sustentam tudo:
   reescreva o conteúdo aprovado (risco de phishing/bloqueio).
 - **O vínculo do HSM com a Meta é sagrado** — ao ativar/desativar ou editar a versão de um canal
   verificado, a plataforma **preserva** o vínculo aprovado. Apagá-lo derruba a aprovação na Meta e o
-  template **para de sair**. (Submeter um HSM novo à Meta não é pela IA — só **consultar** o status.)
+  template **para de sair**. (Submeter/listar HSM na Meta é **por ferramenta**, com **confirmação
+  humana**; deletar na Meta é a caminho.)
 - **Regra de ouro do remetente** — quando escolhível, o remetente é o **e-mail do próprio usuário
   logado**; alguns templates exigem isso por política.
 - **Templates críticos/transacionais** (verificação, código, link mágico, convite de pesquisa) exigem
@@ -206,6 +209,6 @@ Ideias que sustentam tudo:
 - Não cobre **pesquisa de satisfação/NPS** → skill de pesquisas.
 - **Criar template, editar metadados (política de remetente), ativar/desativar e gerir canais** agora
   são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **envio em
-  massa** (broadcast) e **anexos**. **Submeter o HSM à Meta** está **a caminho** (com confirmação humana).
+  massa** (broadcast) e **anexos**. **Submeter/listar HSM na Meta** agora é **por ferramenta** (com confirmação humana); **deletar** HSM na Meta é a caminho.
 - Não expõe **como** as mensagens são roteadas, enfileiradas ou entregues por dentro — só **como
   desenhá-las, dispará-las e conferi-las**.
