@@ -3,7 +3,7 @@ name: financeiro
 description: O ciclo do DINHEIRO depois da venda no Fluxo Ideal — receber (parcelas, contas a receber, aging/DSO/inadimplência), pagar (despesas, fornecedores, recorrências), o caixa (saldo, conferência, frente de caixa) e a saúde financeira (fluxo de caixa projetado, ponto de equilíbrio). Use para responder "quanto entrou / quanto a clínica deve / tem dinheiro em caixa / vai empatar?".
 audience: [ia, humano]
 depends_on: [pagamentos, contas-receber, contas-pagar, caixa, indicadores-financeiros]
-version: 0.2.0
+version: 0.2.1
 updated: 2026-07-12
 ---
 
@@ -134,6 +134,9 @@ Três ideias sustentam tudo:
   ferramenta de **KPIs de contas a pagar**.
 - **Contas a pagar a terceiros** de uma venda (repasse a anestesista/hospital/laboratório) →
   ferramenta de **pagamentos a terceiros** (leitura + KPIs).
+- *(a caminho)* **Criar/editar uma despesa** ou um **custo recorrente** (o dia a dia: aluguel, taxas,
+  assinaturas) → ferramentas de **gestão de despesas** — com prévia + confirmação. É **cadastro**;
+  **pagar** a despesa (que sai do caixa) continua **humano**.
 
 **Caixa**
 - "Quanto tem em caixa?" por conta + total, com o recorte **conferido × provisório** →
@@ -217,9 +220,12 @@ faturando o suficiente?).
   são dos pacientes (parcelas em aberto). Não confunda os dois lados.
 - **Ações que tocam o paciente são outward-facing** (enviar link de assinatura, e-mail) →
   confirme com o usuário antes.
-- **A IA lê o dinheiro; não o move.** Registrar/confirmar pagamento, estorno, pagar despesa e mexer no
-  caixa (sangria/fechamento) são **humano** — fronteira de segurança. A única escrita fiscal da IA é a
-  **NFS-e**, e mesmo essa é **gated** (confirmação; emitir dinheiro-em-revisão cai em fila humana).
+- **Configurar ≠ movimentar.** A IA pode **configurar o que a clínica deve** — criar/editar **despesas e
+  custos recorrentes** ("o aluguel subiu, edita"; "taxa nova, adiciona") — com **confirmação**, porque é
+  **cadastro** (reversível, interno; não toca paciente nem o caixa). *(escrita de config: a caminho.)* Mas
+  **MOVIMENTAR** dinheiro de fato — **pagar** a despesa (sai do caixa), registrar/confirmar recebimento,
+  **estorno**, **frente de caixa** (sangria/fechamento) — é **humano**. A única escrita **fiscal** é a
+  **NFS-e**, e mesmo essa é **gated**.
 
 ## Limites / o que esta skill NÃO cobre
 - **Antes** do dinheiro circular (preço, tabela, condição/forma de pagamento, orçamento,
