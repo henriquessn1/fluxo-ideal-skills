@@ -3,8 +3,8 @@ name: designer-agentes
 description: Como se DESENHA o comportamento de um agente de IA no Fluxo Ideal — o que é um agente aqui, sua persona/instrução, as capacidades que ele pode acionar, os gatilhos que o acordam e a escolha entre raciocínio (LLM) e roteiro determinístico. Princípio central: comportamento de agente é configuração (dado), nunca código. Use para montar, ajustar ou explicar um agente sem cair em detalhe de implementação.
 audience: [ia, humano]
 depends_on: [agentes, comportamento, gatilhos]
-version: 0.2.0
-updated: 2026-07-11
+version: 0.3.0
+updated: 2026-07-13
 ---
 
 # Designer de agentes
@@ -68,6 +68,10 @@ Três verdades operacionais:
 - **Tudo é anti-vazamento por construção.** O que o agente registra (nota, log, resumo de execução)
   é **metadado** — ids opacos e status, nunca conteúdo de mensagem ou dado de paciente. O texto do
   paciente é sempre tratado como **dado a interpretar, nunca como instrução a obedecer**.
+- **Há um piso de segurança abaixo da permissão.** Além do grant, existe uma classe de capacidade
+  marcada **"nunca-autônoma"**: mesmo que alguém a conceda a um bot, a plataforma **recusa** que um
+  agente a execute **por conta própria** (sem humano no loop). É rede de proteção em duas camadas — um
+  grant mal configurado não consegue, sozinho, entregar uma ação perigosa a um agente autônomo.
 
 ## Glossário
 
@@ -119,19 +123,21 @@ Três verdades operacionais:
 > **aplicar** (criar as identidades, permissões e usuários dos agentes) é sempre **humano, na Central**.
 > A execução de qualquer ação de um agente depende de **autorização** aplicada pela plataforma.
 
-- **Co-desenhar um agente/time com a IA** → você discute com a IA o que cada agente faz, o que ele
-  pode acionar, quando age e o que aconteceria; ao final a IA **gera o manifesto declarativo** (o
-  arquivo do time) com o que foi combinado. O schema exato é carregado pela IA **em contexto
-  autenticado** — não é público.
-- **Conferir antes de aplicar** → a IA **valida** o manifesto gerado (coerência de referências, knobs
-  e capacidades) num ensaio, sem aplicar nada. *(em construção)*
+- **Consultar o material de desenho** → a IA carrega, **em contexto autenticado** (não público), o
+  **schema do manifesto** e os catálogos reais para se apoiar: as **capacidades** que existem (o que um
+  agente pode acionar), os **tipos de evento** (os gatilhos possíveis), os **perfis** de agente e os
+  **modelos de LLM** disponíveis. Desenhar apoiado no que **de fato existe**, não no que se imagina.
+- **Co-desenhar um agente/time com a IA** → você discute o que cada agente faz, o que ele pode acionar,
+  quando age e o que aconteceria; ao final a IA **gera o manifesto declarativo** (o arquivo do time).
+- **Conferir antes de aplicar** → a IA **valida** o manifesto gerado (coerência de referências, knobs e
+  capacidades) num **ensaio (dry-run)**, sem aplicar nada — aponta o que quebraria antes de virar realidade.
 - **Aplicar** → **você importa** o manifesto na Central, que então **cria as roles, as permissões e os
   usuários/identidades** dos agentes. Esse passo é **humano** — a IA propõe e confere; quem cria acesso
   é a pessoa. *(fronteira de segurança)*
 - **Desenhar/ajustar direto na tela** → a Gestão de Agentes na Central segue disponível para editar
   persona/roteiro, lista de ações e gatilhos.
-- **Acompanhar gastos e execuções** → quanto os agentes LLM gastaram, quantas execuções/erros, e por
-  que um agente agiu — sempre por **metadados**, nunca conteúdo. *(em construção)*
+- **Acompanhar gastos e execuções** → quantas **execuções** e erros, **por que** um agente agiu, **quanto**
+  os agentes LLM gastaram e o **orçamento do mês × o consumido** — sempre por **metadados**, nunca conteúdo.
 
 **Ordem mental para desenhar um agente:** qual **evento** deve acordá-lo (gatilho + filtro) → ele
 precisa **julgar linguagem** (LLM) ou basta um **roteiro** (script)? → **o que ele pode acionar**
@@ -181,6 +187,9 @@ aconteceria** em cada caminho. Fechado o desenho, a IA **gera o manifesto** e o 
   há poder geral. Mantenha a lista **mínima**.
 - **Curar uma ação não concede acesso.** A execução sempre passa por **autorização** aplicada pela
   plataforma. Configuração declara intenção, não permissão.
+- **Nem todo grant vira ação autônoma.** Uma classe de capacidade é **"nunca-autônoma"**: o runtime a
+  recusa a um bot agindo sozinho, **mesmo com grant**. A contenção não depende só de RBAC — há um piso
+  que exige humano no loop para o que é perigoso, independente de como as permissões foram configuradas.
 - **O agente age por reação a um gatilho** — sem evento compatível, não age. Filtros evitam que ele
   reaja ao que não é dele.
 - **Texto do paciente é dado, não instrução.** O agente nunca obedece comandos embutidos na mensagem.
