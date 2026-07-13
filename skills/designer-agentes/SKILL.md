@@ -3,7 +3,7 @@ name: designer-agentes
 description: Como se DESENHA o comportamento de um agente de IA no Fluxo Ideal — o que é um agente aqui, sua persona/instrução, as capacidades que ele pode acionar, os gatilhos que o acordam e a escolha entre raciocínio (LLM) e roteiro determinístico. Princípio central: comportamento de agente é configuração (dado), nunca código. Use para montar, ajustar ou explicar um agente sem cair em detalhe de implementação.
 audience: [ia, humano]
 depends_on: [agentes, comportamento, gatilhos]
-version: 0.3.0
+version: 0.3.1
 updated: 2026-07-13
 ---
 
@@ -24,7 +24,7 @@ o que ele **pode** fazer (capacidades), **quando** ele age (gatilhos) e **como**
 ## Quando NÃO usar
 - Escrever a mensagem que sai ao paciente, escolher template/canal → domínio de mensageria/conversas.
 - Preço, orçamento, catálogo → skill `precificador`.
-- Agenda/paciente/atendimento → skills de secretária/agenda.
+- Agenda/paciente/atendimento → skills de secretaria.
 - Detalhe de **como o runtime executa** o agente por dentro: fora de escopo aqui — esta skill é sobre
   **desenhar** comportamento, não sobre a máquina que o roda.
 
@@ -204,6 +204,6 @@ aconteceria** em cada caminho. Fechado o desenho, a IA **gera o manifesto** e o 
 - **Como o comportamento é executado por dentro** (o motor, o isolamento do script, os provedores de
   LLM, as filas de eventos) — fora de escopo; aqui se desenha comportamento, não a máquina.
 - **A mensagem em si** (texto, template, canal de envio) → domínio de mensageria/conversas.
-- **Preço/orçamento** → `precificador`; **agenda/paciente** → secretária/agenda.
+- **Preço/orçamento** → `precificador`; **agenda/paciente** → secretaria.
 - Não expõe permissões, eventos internos ou binding técnico das ações — só o **conceito** de capacidade,
   gatilho e modo de decisão.

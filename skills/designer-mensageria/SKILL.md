@@ -3,8 +3,8 @@ name: designer-mensageria
 description: A comunicação da clínica com o paciente no Fluxo Ideal — templates de mensagem (assunto + corpo com variáveis), canais (e-mail, WhatsApp), e as duas formas de falar com o paciente: enviar AGORA por um template ou emitir uma INTENÇÃO governada (a plataforma decide quando entregar). Use para escrever/ajustar textos que vão ao paciente, disparar um e-mail, mandar um aviso automático e checar se a mensagem foi entregue.
 audience: [ia, humano]
 depends_on: [mensagens, templates, canais, entrega]
-version: 0.3.0
-updated: 2026-07-12
+version: 0.3.1
+updated: 2026-07-13
 ---
 
 # Designer de Mensageria
@@ -206,7 +206,7 @@ Ideias que sustentam tudo:
   `designer-documentos`.
 - Não cobre a **conversa/ticket** com o paciente (thread, atribuição, resolução, nota interna) → skill
   de conversas/tickets.
-- Não cobre **pesquisa de satisfação/NPS** → skill de pesquisas.
+- Não cobre **pesquisa de satisfação/NPS** → skill `pesquisas-satisfacao`.
 - **Criar template, editar metadados (política de remetente), ativar/desativar e gerir canais** agora
   são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **envio em
   massa** (broadcast) e **anexos**. **Submeter/listar HSM na Meta** agora é **por ferramenta** (com confirmação humana); **deletar** HSM na Meta é a caminho.

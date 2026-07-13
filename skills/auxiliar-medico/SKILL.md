@@ -3,8 +3,8 @@ name: auxiliar-medico
 description: Apoio ao fluxo de ATENDIMENTO clínico no Fluxo Ideal — check-in do paciente, o estado/etapa em que cada atendimento está, anotações da equipe, pendências operacionais do profissional e métricas do atendimento. Use para acompanhar "onde está o paciente hoje", registrar chegada, mover o atendimento de etapa e ver a fila de trabalho. NÃO cobre o conteúdo do prontuário nem conduta clínica.
 audience: [ia, humano]
 depends_on: [atendimento, checkin, evolucao-operacional, pendencias]
-version: 0.2.0
-updated: 2026-07-10
+version: 0.2.1
+updated: 2026-07-13
 ---
 
 # Auxiliar do atendimento clínico
@@ -25,7 +25,7 @@ recepção e da equipe clínica — **não** o prontuário e **não** decide con
 ## Quando NÃO usar
 - **Conteúdo clínico**: o que foi escrito no prontuário, evolução clínica, diagnóstico, prescrição,
   conduta — isso fica **fora** deste domínio (e fora do que a IA acessa). Nunca invente conduta.
-- **Agenda e cadastro** (marcar/remarcar horário, criar/editar paciente) → skill `secretária`.
+- **Agenda e cadastro** (marcar/remarcar horário, criar/editar paciente) → skill `secretaria`.
 - **Preço/orçamento/venda** do que foi atendido → skill `precificador`.
 - **Documentos** (receita, atestado, laudo, template) → skill `designer-documentos`.
 - **Financeiro** do atendimento (cobrar, pagar, estornar) → domínio de vendas/financeiro.
@@ -165,7 +165,7 @@ comentário se precisar.
 ## Limites / o que esta skill NÃO cobre
 - **Prontuário / conteúdo clínico / conduta** — fora deste domínio por design; a IA vê só o fluxo
   operacional e referências.
-- **Agenda e cadastro de paciente** → skill `secretária`.
+- **Agenda e cadastro de paciente** → skill `secretaria`.
 - **Preço, orçamento e venda** do que foi atendido → skill `precificador`.
 - **Documentos clínicos** (receita, atestado, laudo, templates) → skill `designer-documentos`.
 - **Financeiro** (cobrar/pagar/estornar) do atendimento → domínio de vendas/financeiro.

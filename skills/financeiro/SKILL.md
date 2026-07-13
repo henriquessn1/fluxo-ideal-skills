@@ -3,8 +3,8 @@ name: financeiro
 description: O ciclo do DINHEIRO depois da venda no Fluxo Ideal — receber (parcelas, contas a receber, aging/DSO/inadimplência), pagar (despesas, fornecedores, recorrências), o caixa (saldo, conferência, frente de caixa) e a saúde financeira (fluxo de caixa projetado, ponto de equilíbrio). Use para responder "quanto entrou / quanto a clínica deve / tem dinheiro em caixa / vai empatar?".
 audience: [ia, humano]
 depends_on: [pagamentos, contas-receber, contas-pagar, caixa, indicadores-financeiros]
-version: 0.3.0
-updated: 2026-07-12
+version: 0.3.1
+updated: 2026-07-13
 ---
 
 # Financeiro
@@ -25,10 +25,10 @@ cuida do *dinheiro efetivamente circulando*.
 ## Quando NÃO usar
 - Configurar preço, tabela, condição/forma de pagamento, montar orçamento ou fechar a venda
   → skill `precificador` (o preço **antes** do dinheiro circular).
-- Agenda ou dados cadastrais do paciente → skill `secretária`.
+- Agenda ou dados cadastrais do paciente → skill `secretaria`.
 - Faturamento de convênio / glosa / recurso (TISS) — existe no domínio, mas é um mundo
   próprio (lote, retorno da operadora, glosa, recurso). Trate **conceitualmente** aqui e
-  deixe o detalhe para uma skill dedicada.
+  deixe o detalhe para a skill `faturamento-convenio`.
 
 ## Modelo mental
 
@@ -239,10 +239,10 @@ faturando o suficiente?).
 ## Limites / o que esta skill NÃO cobre
 - **Antes** do dinheiro circular (preço, tabela, condição/forma de pagamento, orçamento,
   fechar a venda) → skill `precificador`.
-- **Faturamento de convênio / glosa / recurso (TISS)** — citado só conceitualmente; merece
-  skill própria (lote, retorno da operadora, glosa, recurso, conciliação).
+- **Faturamento de convênio / glosa / recurso (TISS)** — citado só conceitualmente; tem skill
+  própria: `faturamento-convenio` (lote, retorno da operadora, glosa, recurso, conciliação).
 - **Conciliação com adquirente/gateway de cartão** (bater o extrato do meio de pagamento
   contra as parcelas confirmadas) — mecânica própria; candidata a skill própria.
-- Agenda / cadastro do paciente → skill `secretária`.
+- Agenda / cadastro do paciente → skill `secretaria`.
 - Não expõe como os valores são calculados/armazenados por dentro — só como **lê-los, operá-los
   e pensá-los**.

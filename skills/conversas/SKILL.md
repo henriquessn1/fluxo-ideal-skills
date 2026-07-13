@@ -3,7 +3,7 @@ name: conversas
 description: A operação do atendimento ao paciente no Fluxo Ideal via tickets e filas — o inbox e os contadores do setor, o ciclo de uma conversa (atribuir/transferir/escalar/devolver/pausar/resolver/cancelar/reabrir, com CSAT no fechamento), observar (acompanhar, com prazo), comentar por dentro, marcar a timeline, buscar conversas e histórico, o feed multi-canal do paciente, e detectar conversas frustradas (risco de churn). Responder ao paciente e break-glass ficam FORA. Use para "atende esse ticket", "quantos na fila?", "passa pra recepção", "escala isso", "resolve", "quem está insatisfeito?".
 audience: [ia, humano]
 depends_on: [conversas, tickets, filas, observadores]
-version: 0.2.0
+version: 0.2.1
 updated: 2026-07-13
 ---
 
@@ -34,7 +34,7 @@ mensagem, nem de quem só lê a conversa para ter contexto.
   skill `secretaria` (ela lê; esta **opera**).
 - Agenda, cadastro de paciente, marcar/remarcar → `secretaria`.
 - Pesquisa de satisfação/NPS como instrumento (montar perguntas, resultados) → skill de
-  `pesquisas`. Aqui o CSAT é só **consequência de resolver** um ticket.
+  `pesquisas-satisfacao`. Aqui o CSAT é só **consequência de resolver** um ticket.
 - Conteúdo clínico, preço/orçamento, dinheiro → `auxiliar-medico` / `precificador` /
   `financeiro`.
 
@@ -260,7 +260,7 @@ desobservar no fim).
 - **Só ler a conversa para contexto**, sem operar o ciclo → `secretaria` (lê); esta **opera**.
 - **Agenda e cadastro de paciente** (marcar, remarcar, ficha) → `secretaria`.
 - **Pesquisa de satisfação/NPS** como instrumento (montar, reenviar, resultados) → skill de
-  `pesquisas`. Aqui o CSAT é só efeito de resolver.
+  `pesquisas-satisfacao`. Aqui o CSAT é só efeito de resolver.
 - **Conteúdo clínico / preço / dinheiro** → `auxiliar-medico` / `precificador` / `financeiro`.
 - **Mesclar conversas/contatos duplicados**, apagar mensagens, reconfigurar filas/observação
   automática (VIP) e outras operações estruturais são administração da clínica — fora deste

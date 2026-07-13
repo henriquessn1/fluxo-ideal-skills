@@ -3,8 +3,8 @@ name: precificador
 description: O sistema de precificação do Fluxo Ideal — como se configura preço (catálogo, tabelas, condições e formas de pagamento, favoritos) e como isso converge em orçamento e venda. Use para entender "quanto custa", como montar um orçamento e por que os valores são o que são.
 audience: [ia, humano]
 depends_on: [precos, catalogo, convenios, condicoes-pagamento, orcamentos]
-version: 0.4.0
-updated: 2026-07-11
+version: 0.4.1
+updated: 2026-07-13
 ---
 
 # Precificador
@@ -20,8 +20,8 @@ ser pago) até ele virar **orçamento** e **venda**. Precificar aqui **não é**
 
 ## Quando NÃO usar
 - O que acontece com o dinheiro **depois** — registrar/confirmar pagamento, parcelas em aberto,
-  contas a receber, caixa, faturamento/glosa (TISS) → skill `financeiro`.
-- Agenda ou dados do paciente → skill `secretária`.
+  contas a receber, caixa → skill `financeiro`; faturamento/glosa (TISS) → skill `faturamento-convenio`.
+- Agenda ou dados do paciente → skill `secretaria`.
 
 ## Modelo mental
 
@@ -113,6 +113,6 @@ Três ideias que sustentam tudo:
 - **Autorização é pré-condição, não preço.**
 
 ## Limites
-- Não cobre o **ciclo do dinheiro** (registrar/confirmar pagamento, parcelas, contas a receber, caixa) nem **faturamento/glosa TISS** → `financeiro`.
-- Não cobre agenda/paciente → `secretária`.
+- Não cobre o **ciclo do dinheiro** (registrar/confirmar pagamento, parcelas, contas a receber, caixa) → `financeiro`; **faturamento/glosa TISS** → `faturamento-convenio`.
+- Não cobre agenda/paciente → `secretaria`.
 - Não expõe como preços são calculados/armazenados por dentro — só como **configurá-los, usá-los e pensá-los**.
