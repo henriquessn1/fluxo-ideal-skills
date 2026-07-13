@@ -1,10 +1,10 @@
 ---
 name: conversas
-description: A operação do atendimento ao paciente no Fluxo Ideal via tickets e filas — abrir/atribuir/transferir/resolver o ciclo de uma conversa (com CSAT no fechamento), observar (acompanhar), comentar por dentro, marcar a timeline, buscar conversas e histórico, e detectar conversas frustradas (risco de churn). Use para "atende esse ticket", "passa pra recepção", "resolve isso", "quem está insatisfeito?".
+description: A operação do atendimento ao paciente no Fluxo Ideal via tickets e filas — o inbox e os contadores do setor, o ciclo de uma conversa (atribuir/transferir/escalar/devolver/pausar/resolver/cancelar/reabrir, com CSAT no fechamento), observar (acompanhar, com prazo), comentar por dentro, marcar a timeline, buscar conversas e histórico, o feed multi-canal do paciente, e detectar conversas frustradas (risco de churn). Responder ao paciente e break-glass ficam FORA. Use para "atende esse ticket", "quantos na fila?", "passa pra recepção", "escala isso", "resolve", "quem está insatisfeito?".
 audience: [ia, humano]
 depends_on: [conversas, tickets, filas, observadores]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-13
 ---
 
 # Conversas
@@ -134,29 +134,45 @@ Ideias que sustentam tudo:
 > permissão; a skill nunca promete acesso. Ações que mudam o estado do atendimento ou tocam o
 > paciente **confirmam com o usuário** antes.
 
-**Ler / achar**
-- Achar conversas/interações por critério ("no WhatsApp hoje", "com humor negativo", busca
-  textual) → ferramenta de **busca de interações**.
-- Ver a **linha do tempo** de UM paciente (o que já rolou, quando falaram por último) →
-  ferramenta de **histórico do cliente**.
+**Ver o inbox e uma conversa (leitura)**
+- O **inbox** — a lista de tickets/conversas a trabalhar (por fila, estado, dono) → ferramenta de
+  **inbox**; e os **contadores** (quantos em cada fila/estado — o placar do setor) → ferramenta de
+  **contadores**.
+- Abrir **um ticket** em detalhe (estado, dono, histórico do episódio) → ferramenta de **detalhe do
+  ticket**; e as **métricas** daquele ticket (tempos, primeira resposta) → ferramenta de **métricas
+  do ticket**.
+- O **feed do paciente** — a linha do tempo **unificada multi-canal** daquele contato → ferramenta de
+  **feed do paciente**.
+
+**Achar / contexto**
+- Achar conversas/interações por critério ("no WhatsApp hoje", "com humor negativo", busca textual)
+  → ferramenta de **busca de interações**.
+- Ver a **linha do tempo** de UM paciente (o que já rolou, quando falaram por último) → ferramenta de
+  **histórico do cliente**.
 - Descobrir **quem está frustrado/insatisfeito** (risco de churn) → ferramenta de **conversas
   frustradas** (dado comportamental de CX — uso legítimo é melhorar o atendimento ao titular).
 
 **Operar o ciclo do ticket** (mudam o mundo — confirmam antes)
-- **Assumir / passar a posse** de um atendimento → ferramenta de **atribuir ticket** (dar dono;
-  o próprio agente pode assumir para o ticket não ficar órfão).
-- **Passar para uma fila** (handoff para humanos ou outro setor; o atendimento **continua
-  aberto**, sai sem dono) → ferramenta de **transferir para fila**.
-- **Encerrar** um atendimento concluído (dispara a pesquisa de satisfação) → ferramenta de
-  **resolver ticket**. Se ainda precisa de um humano, **transfira** em vez de resolver.
-- **Deixar uma nota interna** (rastro só da equipe, nunca ao paciente) → ferramenta de
-  **comentar**.
+- **Assumir / passar a posse** → ferramenta de **atribuir ticket** (dar dono; o próprio agente pode
+  assumir para o ticket não ficar órfão).
+- **Movimentar entre equipes:** **transferir para uma fila** (handoff; segue aberto, sai sem dono) →
+  ferramenta de **transferir**; **devolver** ao setor de origem → ferramenta de **devolver**;
+  **escalar** para um nível acima (supervisão) → ferramenta de **escalar**.
+- **Mudar o estado** do episódio — **pausar**, **retomar**, marcar **aguardando paciente** → a
+  ferramenta de **estado do ticket** (uma ação única com o alvo).
+- **Encerrar:** **resolver** (concluído → dispara CSAT) → ferramenta de **resolver**; **cancelar**
+  (sem resolução: engano/spam/paciente sumiu → não dispara CSAT, **exige motivo**) → ferramenta de
+  **cancelar**; **reabrir** um recém-resolvido que ficou com ponta solta → ferramenta de **reabrir**.
+  Se ainda precisa de um humano, **transfira** em vez de resolver.
+- **Deixar uma nota interna** (rastro só da equipe, nunca ao paciente) → ferramenta de **comentar**.
 
 **Acompanhar sem ser dono**
-- **Inscrever** um observador (pessoa ou agente) para acompanhar a conversa até um marco →
-  ferramenta de **observar**. Lembre: inscrição **não** é acesso.
-- **Desinscrever** quando o marco chegou ou o acompanhamento acabou → ferramenta de
-  **desobservar** (o par oposto).
+- **Inscrever** um observador (pessoa ou agente) para acompanhar a conversa, opcionalmente **com
+  prazo** (some sozinho quando o marco chega) → ferramenta de **observar**; **auto-inscrever-se** →
+  ferramenta de **observar-me**. Lembre: inscrição **não** é acesso.
+- **Ver o que você acompanha** → ferramenta de **meus observados**; **quem observa** uma conversa →
+  ferramenta de **listar observadores**.
+- **Desinscrever** quando o marco chegou ou o acompanhamento acabou → ferramenta de **desobservar**.
 
 **Marcar a timeline da clínica**
 - Registrar um **marco global** (campanha, aviso, feriado) → ferramenta de **marco na
@@ -225,6 +241,10 @@ desobservar no fim).
   `designer-mensageria`.
 - **Observar não é autorizar.** Inscrição só direciona eventos; o acesso ao conteúdo depende do
   próprio direito do observador (anti-vazamento). Observação pode expirar.
+- **Responder ao paciente e break-glass ficam FORA — por design.** Enviar mensagem ao paciente é
+  `designer-mensageria`; **revelar o conteúdo privado** de um ticket escalado (break-glass) é ato
+  auditado à parte, não desta via. Este papel opera **estado e encaminhamento**, não destrava sigilo
+  nem fala pelo thread.
 - **Marco de timeline é global.** Confirme antes — impacta a visão de todos os pacientes na
   janela.
 - **Frustração é leitura de CX, não sentença.** Serve para priorizar atenção ao titular; a
@@ -235,6 +255,8 @@ desobservar no fim).
 ## Limites / o que esta skill NÃO cobre
 - **Escrever ou enviar a mensagem ao paciente** (texto, e-mail, HSM, disparo, checar entrega)
   → `designer-mensageria`. Esta skill cuida do **thread/fila/estado**, não do **conteúdo**.
+- **Revelar conteúdo privado** de um ticket escalado (**break-glass**) fica **fora** desta via, por
+  design — é ato auditado à parte. A skill opera o estado; não destrava sigilo.
 - **Só ler a conversa para contexto**, sem operar o ciclo → `secretaria` (lê); esta **opera**.
 - **Agenda e cadastro de paciente** (marcar, remarcar, ficha) → `secretaria`.
 - **Pesquisa de satisfação/NPS** como instrumento (montar, reenviar, resultados) → skill de
