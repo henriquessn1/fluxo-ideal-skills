@@ -3,8 +3,8 @@ name: faturamento-convenio
 description: O faturamento de convênio (TISS) no Fluxo Ideal — faturar guias/lotes, importar o retorno da operadora, tratar glosas e recorrer. Use para entender o ciclo de cobrança de convênio e acompanhar lotes/glosas. É o "financeiro de convênio", distinto do financeiro-caixa.
 audience: [ia, humano]
 depends_on: [faturamento-convenio, tiss, glosa]
-version: 0.2.0
-updated: 2026-07-12
+version: 0.2.1
+updated: 2026-07-13
 ---
 
 # Faturamento de convênio (TISS)
@@ -60,6 +60,9 @@ Há **duas naturezas de escrita**, e a fronteira entre elas é a lente-mestra:
 - **Recursos** — acompanhar os **recursos** (as contestações de glosa).
 - **Board de autorização prévia** — a fila de autorizações do convênio (leitura).
 - **Demonstrativos** — a **listagem do retorno** da operadora (o que ela pagou / glosou).
+- **Dinheiro do convênio (visão gerencial)** — os **recebíveis de convênio** e a **reconciliação de
+  convênio** (apresentado × pago × glosado) → pela quebra (**drill-down**) do painel de gestão (skill
+  `indicadores`), disponível também a este papel.
 
 **Configurar o convênio (por ferramenta, com prévia + confirmação — é cadastro, não movimento):**
 - **Contrato TISS** — criar/editar a configuração TISS do convênio: **registro ANS**, as **versões de
