@@ -1,10 +1,10 @@
 ---
 name: indicadores
-description: A visão de GESTÃO/BI da clínica no Fluxo Ideal — o dashboard executivo que cruza agenda, comercial, atendimento, financeiro e satisfação num lugar só. Ensina o que cada indicador significa em NEGÓCIO (ocupação, no-show, conversão, ticket médio, produção, DSO, inadimplência, TMA, NPS) e como exportar os dados. Use para "como está a clínica?", "quero um panorama", "exporta tudo".
+description: A visão de GESTÃO/BI da clínica no Fluxo Ideal — o dashboard executivo que cruza agenda, comercial, atendimento, financeiro e satisfação num lugar só: ler os KPIs, abrir as quebras (drill-down por profissional/convênio/procedimento), comparar com o período anterior e ver a evolução no tempo. Ensina o que cada indicador significa em NEGÓCIO (ocupação, no-show, conversão, ticket médio, produção, DSO, inadimplência, TMA, NPS). Exportar a base crua é papel à parte (backup/DPO). Use para "como está a clínica?", "quero um panorama", "abre por profissional", "compara com o mês passado".
 audience: [ia, humano]
 depends_on: [indicadores, gestao, exportacao]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-13
 ---
 
 # Indicadores
@@ -18,8 +18,12 @@ número mora nas skills de domínio.
 - "Como está a clínica?", "me dá um panorama / raio-x", "resumo executivo do mês".
 - Ler um indicador de topo e o que ele significa: ocupação, no-show, conversão, ticket médio,
   produção, DSO, inadimplência, TMA, taxa de retorno, NPS.
+- **Abrir a quebra** de um número (produção por profissional/convênio, margem por procedimento, aging
+  por faixa, TMA de retorno × 1ª consulta…).
+- **Comparar com o período anterior** (a variação de cada KPI, com o sentido) e ver a **evolução no tempo**.
 - Comparar seções (a agenda está cheia mas a conversão caiu? o caixa aperta e a inadimplência subiu?).
-- **Exportar os dados** da clínica ("baixar tudo", "fazer um backup", "levar pro contador/Excel").
+- **Exportar a base crua** ("baixar tudo", "backup", "pro contador/Excel") — mas isso é um **papel à
+  parte** (backup/DPO), não a leitura de BI; ver a seção de export.
 
 ## Quando NÃO usar
 - **Operar** ou detalhar um número específico — a fonte de cada indicador vive na skill de domínio:
@@ -136,20 +140,35 @@ conversão, TMA, taxa de retorno). É por onde começar um panorama.
   - Para "agora": prefira os KPIs ao vivo (atendimento); avise que agenda tem cache curto.
   - Para DSO e afins que dependem de período: informe **data início e fim**.
 
-**Exportar os dados**
-- "Exporta meus dados", "backup", "baixar tudo", "levar pro Excel/contador" → a ferramenta de
-  **disparar export**. Gera um arquivo (planilha) empacotado num **ZIP protegido por senha**, de
-  forma **assíncrona** (devolve um identificador de job). A **senha é obrigatória** e **não fica
-  salva** — o usuário precisa informá-la e **guardá-la** (sem ela o ZIP não abre). Dá pra escolher
-  o **escopo** (período ou tudo) e **quais domínios** de dados incluir; exports grandes podem ser
-  **agendados para a madrugada** (fora do pico).
-- "Ficou pronto? cadê o download?" → a ferramenta de **status do export**. Devolve o estado do job
-  (aguardando / processando / pronto / erro) e, quando **pronto**, um **link de download temporário**
-  (expira em poucos minutos — baixe logo). O acompanhamento é **do dono** do job.
+**Aprofundar o painel (drill-down)**
+- Abrir as **quebras** de um KPI de topo — sair do "quanto" para o "de onde vem": produção **por
+  profissional** e **por convênio**; conversão de pacientes **novos × já existentes**; **margem** por
+  procedimento / profissional / convênio; a carteira **por faixa de atraso** (aging) e o DSO **a prazo ×
+  total**; os **recebíveis de convênio** e a **reconciliação de convênio**; o TMA de **retorno × 1ª
+  consulta** → a ferramenta de **drill-down** do painel.
 
-**Ordem mental para um panorama:** executiva (o topo) → aprofunde a seção que chamou atenção
-(agenda / comercial / atendimento / financeiro / satisfação) → cheque o status de cada KPI →
-se precisar levar os números pra fora, dispare o export e acompanhe o status.
+**Comparar períodos**
+- "Este período × o anterior" — a **variação** de cada KPI (em % e absoluta), já com o **sentido** (se
+  subir é bom ou ruim), e o período anterior **derivado sozinho** (você só informa o período atual) → a
+  ferramenta de **comparação de períodos**.
+
+**Evolução no tempo (série)**
+- A **curva de produção** ao longo do tempo (por mês / semana / dia) — o que o "total do período" não
+  mostra → a ferramenta de **série temporal**. *(Hoje cobre a produção/comercial; as curvas de agenda,
+  atendimento e financeiro ainda **não** estão por ferramenta — em desenvolvimento.)*
+
+**Exportar a base crua (papel à parte — NÃO é do BI)**
+- "Exporta tudo em Excel / backup / pro contador" gera a **base crua** da clínica (dados pessoais **sem
+  máscara**) — o maior ponto de saída de dado. Por isso **não faz parte do papel de BI**: disparar o
+  export é uma permissão **separada** (papel de **backup / DPO**). Se você não a tem, o export **não está
+  no seu alcance** — leia/interprete o painel e encaminhe o pedido a quem cuida de backup.
+- Quando **é** o seu papel: a **senha** do ZIP é **fornecida pelo humano** (a IA **nunca** a inventa nem
+  a guarda) e o **link de download não é repassado pela IA** — ele chega por **notificação ao próprio
+  disparador** do job. A IA pode acompanhar o **estado** (aguardando / processando / pronto / erro), mas
+  **não entrega o link**. Sem a senha, o ZIP não abre.
+
+**Ordem mental para um panorama:** executiva (o topo) → aprofunde a seção que chamou atenção com o
+**drill-down** → **compare** com o período anterior / olhe a **série** → cheque o status de cada KPI.
 
 ## Fluxos comuns
 
@@ -169,10 +188,11 @@ se precisar levar os números pra fora, dispare o export e acompanhe o status.
   aplica ao comercial (é da clínica inteira); use-o para agenda/atendimento.
 
 ### "Exporta tudo pra eu mandar pro contador"
-1. Dispare o **export**, definindo uma **senha forte** (o usuário anota — não fica salva) e o escopo/domínios.
-2. Guarde o identificador do job e **consulte o status** até ficar **pronto**.
-3. Quando pronto, entregue o **link de download** avisando que **expira em minutos** e que o **ZIP abre com a senha** informada.
-4. Se for um export grande "de tudo", avise que pode ser **agendado para a madrugada**.
+1. Confirme o **papel**: exportar a base crua é de **backup/DPO**, não do BI. Se o usuário não tem essa
+   permissão, o export não aparece — leia/interprete o painel e encaminhe a quem faz backup.
+2. Sendo o papel certo: a **senha** é **do humano** (ele define e anota; a IA não inventa nem guarda).
+3. Acompanhe o **estado** do job (aguardando / processando / pronto / erro). O **link de download não é
+   entregue pela IA** — chega por **notificação ao disparador**. Exports grandes podem ir pra **madrugada**.
 
 ## Regras e invariantes
 - **Nunca invente número.** KPI sem fonte = `indisponivel` com motivo; KPI parcial = `degradado`
@@ -183,8 +203,9 @@ se precisar levar os números pra fora, dispare o export e acompanhe o status.
 - **Filtros têm alçada:** convênio vale para agenda/atendimento; comercial e financeiro são da clínica
   inteira; DSO e similares exigem período.
 - **Satisfação é só agregado** — nunca comentário/texto livre do paciente.
-- **Export protege o dado:** ZIP com senha **obrigatória e não persistida**; link de download
-  **temporário** e **do dono** do job. Perder a senha = perder o acesso ao arquivo.
+- **Export é papel à parte e protege o dado:** disparar a base crua é permissão **separada** (backup/DPO),
+  fora do BI. A senha é **do humano** (a IA não inventa nem guarda) e o **link não é repassado pela IA**
+  (vai por notificação ao disparador). Perder a senha = perder o acesso ao arquivo.
 - **Indicadores é leitura.** Nada aqui altera agenda, venda, caixa ou paciente (o export é um backup
   de saída, não uma mutação). Ação/operação é nas skills de domínio.
 
@@ -194,4 +215,7 @@ se precisar levar os números pra fora, dispare o export e acompanhe o status.
   gestão** e **quando olhar**.
 - **Agir** sobre um indicador (cobrar um inadimplente, remarcar um no-show, fechar uma venda) → skill de domínio.
 - **Configurar** o dashboard, criar indicadores, administrar a pesquisa de satisfação → administração, fora do escopo.
-- Não expõe como os indicadores são compostos/consultados por dentro — só como **lê-los, interpretá-los e exportar os dados**.
+- **Alertas / metas automáticos por KPI** (avisar quando um número cruza um limite) **não existem** ainda —
+  o acompanhamento é manual (leia e compare você mesmo).
+- A **série no tempo** hoje cobre só a **produção/comercial**; agenda, atendimento e financeiro ainda não.
+- Não expõe como os indicadores são compostos/consultados por dentro — só como **lê-los, interpretá-los, aprofundá-los e compará-los**.
