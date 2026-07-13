@@ -1,32 +1,38 @@
 ---
 name: administrador-clinica
-description: A "planta baixa" da clínica no Fluxo Ideal — configurar a identidade do estabelecimento (dados, contato, branding/white-label), conhecer os profissionais (quem são, especialidades, registros de conselho, onde e quando atendem) e os convênios que a clínica aceita. Use para "quais médicos temos?", "quais convênios a clínica atende?", "veste a marca da clínica", "monta o estabelecimento novo".
+description: A "planta baixa" da clínica no Fluxo Ideal — configurar a identidade do estabelecimento (dados, contato, endereço, branding/white-label), cadastrar e gerir os profissionais (especialidades, registros de conselho, grade de horários, vínculos, documentos), os convênios aceitos, o catálogo de especialidades e o site público. Use para "cadastra a Dra. X", "adiciona esse convênio", "quais médicos temos?", "veste a marca da clínica", "monta o estabelecimento novo". Criar login/acesso (IAM) fica FORA.
 audience: [ia, humano]
 depends_on: [estabelecimento, profissionais, especialidades, convenios]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-13
 ---
 
 # Administrador da clínica
 
 Configurar e conhecer a **estrutura** da clínica: a identidade do estabelecimento, o corpo de
-profissionais e os convênios aceitos. É a **planta baixa** que as outras áreas consomem — quem
-precifica usa os convênios que saem daqui; quem agenda usa os profissionais e suas especialidades.
-Este papel monta e consulta esse alicerce; **não** opera agenda, paciente, preço nem comportamento
-de agentes.
+profissionais, os convênios aceitos e as especialidades. É a **planta baixa** que as outras áreas
+consomem — quem precifica usa os convênios que saem daqui; quem agenda usa os profissionais e suas
+especialidades. Este papel **monta, mantém e consulta** esse alicerce (o profissional como **dado
+cadastral**, o convênio institucional, o site público); **não** opera agenda, paciente, preço nem
+comportamento de agentes, e **não cria login/acesso** (isso é IAM, fica fora).
 
 ## Quando usar
 - "Quais profissionais a clínica tem?", "me fala sobre a Dra. X", "quem faz odontologia?",
   "o CRM dela está vigente?", "em quais unidades o Dr. Y atende?".
-- "Quais convênios a clínica aceita?", "esse convênio ainda está ativo?".
+- **Cadastrar / editar um profissional** como **dado** — especialidades, registros de conselho,
+  grade-modelo de horários, vínculo com unidade(s), documentos. (Criar o **login/acesso** dele é IAM,
+  fora daqui.)
+- "Quais convênios a clínica aceita?" e **cadastrar / ativar / desativar** um convênio institucional.
 - Configurar a **identidade / branding** do estabelecimento (nome, cores, logos, tema, contato,
-  textos legais) — white-label do portal do paciente.
-- **Onboarding** de uma clínica nova, no nível conceitual: criar o registro do estabelecimento e
-  vesti-lo com a marca (o primeiro passo estrutural antes de o resto ser configurado).
+  **endereço**, textos legais) — white-label do portal do paciente.
+- Configurar o **site público** da clínica e o **catálogo de especialidades**.
+- **Onboarding** de uma clínica nova: criar o registro do estabelecimento e vesti-lo com a marca.
 
 ## Quando NÃO usar
-- Preço, catálogo, tabelas, orçamento — inclusive **cadastrar** convênio como contexto de preço →
-  skill `precificador`. (Aqui só se **lê** quais convênios existem.)
+- Preço, catálogo, tabelas, orçamento e o **preço por convênio** → skill `precificador`. Aqui se
+  cadastra o convênio **institucional** (a lista de planos aceitos); o **preço** dele é lá.
+- **Convênio/carteirinha do paciente** (vincular um plano a uma pessoa) → skill `secretaria`. A
+  **configuração TISS** do convênio → `faturamento-convenio`. Aqui é o convênio como **entidade da clínica**.
 - Agenda, disponibilidade, marcar/remarcar, pacientes → skill `secretaria`.
 - Conteúdo clínico (prontuário, receitas) → skill `auxiliar-medico`.
 - Configurar o **comportamento** de um agente/bot (prompts, gatilhos, o que ele faz) →
@@ -54,16 +60,19 @@ Ideias que orientam quase tudo:
 - **Estabelecimento é a identidade, não a operação.** Aqui mora o "quem é a clínica": nome,
   contato, endereço e o **kit de marca** (cores, logos, tema, fonte, textos legais) que veste o
   portal do paciente (white-label). Não é agenda nem financeiro — é a fachada.
-- **Convênios aqui são o catálogo institucional** — a lista de planos que a clínica aceita. O
-  **preço** por convênio é assunto de outra área (`precificador`); este papel só responde "quais
-  existem / estão ativos".
-- **Profissional é uma pessoa com atributos consultáveis**: especialidades (com uma **principal**),
-  registros de conselho (CRM/CRO/etc — números **públicos**, úteis para "o registro está vigente?"),
-  os **estabelecimentos** onde atua e uma **grade-modelo** de horários. Essa grade é um **template**
-  de disponibilidade — **não** é a agenda real (ocupação/slots livres são de `secretaria`).
-- **Dado sensível fica de fora.** As consultas de profissional trazem propósito institucional
-  (nome, apelido, pronome, especialidade, registros públicos) — **nunca CPF**. Você configura a
-  clínica sem tocar em PII de profissional ou paciente.
+- **Convênios aqui são o catálogo institucional** — a lista de planos que a clínica aceita, que este
+  papel **cadastra, ativa e desativa**. O **preço** por convênio é de `precificador`; a **carteirinha
+  do paciente** é de `secretaria`; a **config TISS** é de `faturamento-convenio`. Aqui é o convênio
+  como **entidade da clínica**.
+- **Profissional é uma pessoa que este papel cadastra e mantém** (como **dado**, não como acesso):
+  especialidades (uma **principal**), registros de conselho (CRM/CRO — números **públicos**), os
+  **estabelecimentos** onde atua, uma **grade-modelo** de horários (template de disponibilidade,
+  **não** a agenda real — de `secretaria`) e **documentos**.
+- **Cadastrar o profissional ≠ dar-lhe acesso.** Este papel cria/edita o **registro** do profissional;
+  **criar login, senha ou papel de acesso (IAM)** é ato privilegiado à parte e **fica fora** (nunca
+  `iam:manage`). Montar a pessoa é aqui; deixá-la **entrar no sistema** é outro papel.
+- **CPF é write-only.** Ao cadastrar/editar um profissional você **pode informar** o CPF, mas as
+  leituras **nunca o devolvem** — some da projeção. Você configura sem PII sensível vazar de volta.
 - **Configurar identidade é ato deliberado.** Criar ou revestir um estabelecimento muda a cara do
   produto para o cliente — por isso a escrita **pré-visualiza antes de gravar**.
 
@@ -102,22 +111,34 @@ Ideias que orientam quase tudo:
 > skill nunca promete acesso. A ferramenta de **escrita** pré-visualiza antes de gravar (aplique só
 > após confirmação).
 
-**Profissionais (leitura)**
-- Listar os profissionais da clínica (por nome, username, ativos/inativos) → ferramenta de busca de
-  profissionais. Devolve **enxuto** e **sem CPF**; peça expansão de **especialidades** ou
-  **estabelecimentos** quando quiser ver área de atuação / onde atuam.
-- Ver **um** profissional em detalhe → ferramenta de detalhe do profissional. Expanda sob demanda:
+**Profissionais**
+- **Ler:** listar os profissionais (por nome/username, ativos/inativos) → busca de profissionais
+  (**enxuta**, **sem CPF**); ver **um** em detalhe → detalhe do profissional, expandindo sob demanda
   **especialidades** (com a principal), **grade-modelo de horários** (template, não a agenda real),
-  **estabelecimentos** onde atua, e **registros de conselho** (CRM/CRO — números públicos).
+  **estabelecimentos** onde atua e **registros de conselho** (CRM/CRO — números públicos).
+- **Cadastrar/editar (como dado):** criar ou atualizar o profissional, sua **grade de horários** e seus
+  **documentos** → ferramentas de gestão de profissional. CPF é **write-only** (pode informar; nunca
+  volta na leitura). **Não** cria login/acesso — isso é IAM, fora.
 
-**Convênios (leitura)**
-- Saber quais convênios a clínica aceita (e quais estão ativos) → ferramenta de listagem de
-  convênios.
+**Convênios**
+- **Ler:** quais a clínica aceita (e ativos) → listagem de convênios.
+- **Cadastrar/editar:** criar, ativar/desativar e editar um convênio **institucional** → ferramenta de
+  gestão de convênio. É a lista de planos aceitos — o **preço** é `precificador`, a **carteirinha** é
+  `secretaria`, a **config TISS** é `faturamento-convenio`.
 
-**Identidade / branding (escrita)**
-- Criar o registro de um estabelecimento novo, ou revestir a marca de um existente → ferramenta de
-  gestão do estabelecimento. Ela **pré-visualiza** o que gravaria (sem gravar) por padrão; só
-  persiste quando você confirma. Aplica **parcial** ao revestir — só os campos enviados mudam.
+**Especialidades**
+- Manter o **catálogo de especialidades** (nome, cor, ícone) → ferramenta de gestão de especialidade.
+
+**Estabelecimento (identidade / branding / site)**
+- **Ler:** dados do estabelecimento → detalhe/listagem do estabelecimento.
+- **Configurar:** criar um estabelecimento novo, revestir a **marca** (cores, logos, tema, fonte,
+  textos legais) e o **endereço/contato** → gestão do estabelecimento; e ligar/ajustar o **site
+  público** → gestão do site. Ambas **pré-visualizam** antes de gravar e aplicam **parcial** (só o que
+  muda) — persiste só após confirmar.
+
+**Salas / equipamentos / recursos** *(em desenvolvimento)*
+- O modelo de **recurso agendável** (sala/consultório/equipamento) já existe no backend, mas ainda
+  **não** está por ferramenta — vem num próximo recorte. Não prometa a capacidade ainda.
 
 ## Fluxos comuns
 
@@ -129,10 +150,18 @@ Ideias que orientam quase tudo:
 3. "Em quais unidades ele atende?" → expanda **estabelecimentos**. "Quando ele atende?" → a
    **grade-modelo de horários** dá o template (para vaga real, é `secretaria`).
 
-### "Quais convênios a clínica atende?"
-1. **Listagem de convênios**; filtre por **ativos** para mostrar só os aceitos hoje.
-2. Se a pergunta escorregar para "quanto o convênio paga" ou "preço por convênio", isso é
-   `precificador` — aqui você só entrega a lista.
+### Convênios: consultar e cadastrar
+1. **Listar** os convênios; filtre por **ativos** para os aceitos hoje.
+2. Para **adicionar / ativar / desativar** um convênio institucional → **gestão de convênio**
+   (pré-visualiza, confirma, aplica).
+3. "Quanto o convênio paga / preço por convênio" é `precificador`; "carteirinha do paciente" é
+   `secretaria`; "faturar TISS" é `faturamento-convenio`. Aqui é a **entidade** convênio.
+
+### Cadastrar um profissional novo (como dado)
+1. Crie o **registro** do profissional (nome/atributos) — pré-visualize, confirme, aplique.
+2. Complete: **especialidades** (marque a principal), **registros de conselho** (CRM/CRO com UF/validade),
+   **vínculo** com a(s) unidade(s), a **grade-modelo de horários** e **documentos**. CPF é write-only.
+3. Dar-lhe **login/acesso** ao sistema é **IAM** — outro papel, fora daqui.
 
 ### Vestir a marca da clínica (white-label)
 1. Reúna o kit: nome, cores (primária/secundária/fundo/texto), tema (claro/escuro), fonte, logos,
@@ -150,8 +179,10 @@ Ideias que orientam quase tudo:
 ## Regras e invariantes
 - **Estabelecimento é identidade, não operação.** Aqui não se marca consulta, não se cobra, não se
   atende — só se define quem a clínica é.
-- **Profissional nunca expõe CPF.** As consultas são de propósito institucional; PII sensível fica
-  fora deste papel.
+- **CPF é write-only.** Pode ser informado ao cadastrar/editar um profissional, mas a **leitura nunca
+  o devolve** — as consultas são de propósito institucional e a PII sensível não volta na projeção.
+- **Cadastrar ≠ dar acesso.** Criar/editar o profissional é cadastro de **dado**; criar login/senha/
+  papel de acesso é **IAM** e fica **fora** (nunca a gestão de acessos).
 - **Registro de conselho é público.** CRM/CRO/etc podem ser mostrados (com UF/validade); servem
   para conferir vigência.
 - **Grade-modelo ≠ agenda.** O horário do profissional aqui é um **template** de disponibilidade,
@@ -159,8 +190,9 @@ Ideias que orientam quase tudo:
 - **Especialidade tem uma principal.** Ao ler, distinga a principal das demais.
 - **Escrita de identidade pré-visualiza.** Criar/revestir estabelecimento mostra o payload antes de
   gravar; só aplique após confirmar. Ao atualizar, é **parcial** — campos não enviados permanecem.
-- **Convênio aqui é lista, não preço.** Responder "quais existem/estão ativos" é escopo; "quanto
-  paga" não é.
+- **Convênio aqui é a entidade institucional (cadastro), não o preço nem a carteirinha.** Criar/ativar/
+  desativar o convênio da clínica é escopo; "quanto paga" é `precificador`, "carteirinha do paciente" é
+  `secretaria`, "TISS" é `faturamento-convenio`.
 - **Autorização é do MCP.** A skill ensina a intenção; o acesso efetivo depende da permissão do
   usuário — configurar identidade e apenas consultar são níveis diferentes.
 
@@ -171,9 +203,12 @@ Ideias que orientam quase tudo:
   horários daqui é template, não a agenda real.
 - **Conteúdo clínico** (prontuário, receitas, atestados) → `auxiliar-medico`.
 - **Comportamento de agentes/bots** (prompts, gatilhos, o que o agente faz) → `designer-agentes`.
-- **Cadastro/edição estrutural de profissionais e de usuários** (criar profissional, gerir acesso
-  de login) é administração de identidade sensível — este papel **consulta** os profissionais, mas
-  não os cria nem gere seus acessos.
+- **Login / acesso (IAM)** — criar usuário, senha, papel de acesso, reset de senha — é administração de
+  identidade privilegiada e fica **fora** (nunca a gestão de acessos). Este papel cadastra o profissional como
+  **dado** (registro, especialidades, horários, documentos), mas **não** cria nem gere o **acesso** dele
+  ao sistema.
+- **Salas / equipamentos / recursos agendáveis** existem no backend mas ainda **não** estão por
+  ferramenta — não ofereça a capacidade até o wrap sair.
 - **Excluir um estabelecimento** é irreversível e fica fora deste papel.
 - Não expõe como estabelecimento, profissionais e convênios são armazenados por dentro — só como
   **configurá-los, consultá-los e pensá-los**.
