@@ -69,8 +69,8 @@ Ideias que orientam quase tudo:
   **estabelecimentos** onde atua, uma **grade-modelo** de horários (template de disponibilidade,
   **não** a agenda real — de `secretaria`) e **documentos**.
 - **Cadastrar o profissional ≠ dar-lhe acesso.** Este papel cria/edita o **registro** do profissional;
-  **criar login, senha ou papel de acesso (IAM)** é ato privilegiado à parte e **fica fora** (nunca
-  `iam:manage`). Montar a pessoa é aqui; deixá-la **entrar no sistema** é outro papel.
+  **criar login, senha ou papel de acesso (IAM)** é ato privilegiado à parte e **fica fora** (nunca a
+  gestão de acessos). Montar a pessoa é aqui; deixá-la **entrar no sistema** é outro papel.
 - **CPF é write-only.** Ao cadastrar/editar um profissional você **pode informar** o CPF, mas as
   leituras **nunca o devolvem** — some da projeção. Você configura sem PII sensível vazar de volta.
 - **Configurar identidade é ato deliberado.** Criar ou revestir um estabelecimento muda a cara do
