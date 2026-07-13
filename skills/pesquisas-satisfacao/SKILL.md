@@ -1,10 +1,10 @@
 ---
 name: pesquisas-satisfacao
-description: O instrumento de SATISFAÇÃO do paciente no Fluxo Ideal — a pesquisa de CX/NPS que a clínica dispara após o atendimento, quem foi convidado e como caminhou o convite, e a leitura dos resultados AGREGADOS (NPS, notas médias, distribuição). Use para "qual o NPS deste mês?", "qual a taxa de resposta?", "por que o paciente não recebeu a pesquisa?", "reenvia/antecipa o convite".
+description: O instrumento de SATISFAÇÃO do paciente no Fluxo Ideal — criar/editar/ativar a pesquisa de CX/NPS (perguntas, gatilho, anonimato), configurar o disparo automático (ligar/desligar, atraso), acompanhar quem foi convidado e como caminhou o convite, e ler os resultados AGREGADOS (NPS, notas médias, distribuição). Use para "cria uma pesquisa de NPS", "liga o disparo pós-consulta", "qual o NPS deste mês?", "qual a taxa de resposta?", "por que o paciente não recebeu?", "reenvia/antecipa o convite".
 audience: [ia, humano]
 depends_on: [pesquisas, satisfacao, nps]
-version: 0.1.0
-updated: 2026-07-10
+version: 0.2.0
+updated: 2026-07-13
 ---
 
 # Pesquisas de satisfação
@@ -14,6 +14,9 @@ acompanhar os **convites** enviados e ler os **resultados agregados** (NPS, nota
 O foco é a **satisfação**, não a operação do dia a dia da clínica.
 
 ## Quando usar
+- **Criar / editar / ativar** uma pesquisa: as perguntas (vários tipos), o **gatilho** e o **modo de
+  anonimato** — com pré-visualização e confirmação.
+- **Configurar o disparo automático**: ligar/desligar e ajustar o **atraso** (horas/minutos).
 - "Qual o NPS deste mês?", "qual a nota média do atendimento?", "como estão as respostas?".
 - "Qual a taxa de resposta?", "quantos convites saíram / foram respondidos / falharam?".
 - "Por que o paciente não recebeu a pesquisa?", "o disparo automático está ligado?".
@@ -24,8 +27,9 @@ O foco é a **satisfação**, não a operação do dia a dia da clínica.
   Aqui é o **instrumento** (perguntas, convites, resultados); lá é **como se fala** com o paciente.
 - Painel executivo geral da clínica (agenda, comercial, financeiro juntos) → `indicadores`. O NPS
   aparece lá como **um** número num dashboard maior; aqui é a leitura completa da pesquisa.
-- Criar/editar/ativar a pesquisa, mudar as perguntas, ligar/desligar o disparo ou mudar o atraso —
-  isso é **administração**, feita na tela da Central, fora desta skill.
+- **Apagar** uma pesquisa ou ler **respostas individuais** (quem respondeu o quê) — ficam de fora:
+  exclusão é destrutiva e a resposta individual é dado sensível. Aqui se **cria/edita/ativa** e se lê o
+  **agregado**.
 
 ## Modelo mental
 
@@ -63,12 +67,27 @@ Uma pesquisa de satisfação é um **instrumento que dispara sozinho** e cujas r
 - **CSAT**: satisfação com o atendimento (média das notas) — o "quão satisfeito".
 
 ## Ferramentas (tarefa → ferramenta)
-> A execução depende de **autorização** — a plataforma aplica permissão; a skill só ensina a intenção e o _quando_.
+> A execução depende de **autorização** — a plataforma aplica permissão; a skill só ensina a intenção e
+> o _quando_. As **escritas pré-visualizam** (dry-run) e aplicam só após confirmar.
 
-- **Ver quais pesquisas existem / qual está ativa / quais perguntas ela tem** → ferramenta que lista as pesquisas (a ativa e, sob pedido, as perguntas).
-- **Ler os resultados — NPS, nota média, distribuição, contagem por opção** → ferramenta de resultados da pesquisa (filtrável por profissional e período). É a **joia** do módulo.
-- **Acompanhar o funil de convites e a taxa de resposta** → ferramenta de envios (contagem por status + taxa; opcionalmente uma amostra sem dados pessoais).
-- **Diagnosticar por que os convites não estão saindo** → ferramenta de estado do disparo (automação ligada?, atraso configurado, motor vivo, fila parada). **Não trate silêncio como "ok"** — leia o aviso.
+**Ler**
+- **Ver quais pesquisas existem / qual está ativa / quais perguntas e qual o gatilho** → ferramenta que
+  lista as pesquisas (a ativa e, sob pedido, as perguntas e o gatilho configurado).
+- **Ler os resultados — NPS, nota média, distribuição, contagem por opção** → ferramenta de resultados
+  (filtrável por profissional e período). É a **joia** do módulo.
+- **Acompanhar o funil de convites e a taxa de resposta** → ferramenta de envios (contagem por status +
+  taxa; opcionalmente uma amostra **sem dados pessoais**).
+- **Diagnosticar por que os convites não estão saindo** → ferramenta de estado do disparo (automação
+  ligada?, atraso, motor vivo, fila parada). **Não trate silêncio como "ok"** — leia o aviso.
+
+**Configurar (o instrumento — cadastro, com confirmação)**
+- **Criar / editar / ativar** a pesquisa: perguntas (escala/estrelas/likert, múltipla escolha/sim-não/
+  seleção múltipla, texto livre), **gatilho** e **modo de anonimato** → ferramenta de autoria de pesquisa.
+  Pré-visualiza antes de gravar; **apagar** uma pesquisa fica de fora.
+- **Ligar/desligar o disparo automático** e ajustar o **atraso** (horas/minutos) → ferramenta de config
+  do disparo. Mostra o **atual × a proposta** antes de aplicar.
+
+**Convite (toca o paciente — confirma antes)**
 - **Fazer um convite específico sair de novo** (falhou / não respondeu) → ferramenta de reenviar convite.
 - **Fazer um convite agendado sair agora**, sem esperar o atraso → ferramenta de antecipar envio.
 
@@ -99,8 +118,15 @@ parecem magros, olhe o funil de envios (taxa de resposta) → se poucos convites
 - **Reenviar e antecipar são ações que atingem o paciente** — o paciente recebe uma mensagem real. **Confirme com o usuário antes.**
 - **Antecipar ≠ reenviar**: antecipar só vale para convite **agendado** (pula a espera); reenviar recoloca na fila um convite que **falhou ou não foi respondido**. Nenhum dos dois convida paciente novo nem cria pesquisa — só mexem num convite **que já existe**. Convite **já respondido** não é reenviado.
 - **Silêncio não é saúde** — se ninguém recebeu, cheque o estado do disparo antes de concluir que "está calmo".
+- **Configurar ≠ disparar.** Criar/editar/ativar a pesquisa e ligar/ajustar o disparo automático é
+  **cadastro** (reversível, interno) — a IA faz **com confirmação**. Mas a IA **não sai convidando
+  paciente por conta própria**: quem envia é o **motor automático** (por gatilho) ou o humano via
+  reenviar/antecipar (que confirmam). **Apagar** uma pesquisa e ler **respostas individuais** ficam **fora**.
 
 ## Limites / o que esta skill NÃO cobre
 - Não escreve nem ajusta o **texto/canal** do convite → `designer-mensageria`.
 - Não é o **dashboard executivo** da clínica (agenda + comercial + financeiro) → `indicadores`.
-- Não **administra** a pesquisa (criar/editar perguntas, ativar, ligar/desligar o disparo, mudar o atraso) nem lê **respostas individuais** — isso vive na Central e fora do escopo de satisfação-como-gestão.
+- **Cria/edita/ativa** a pesquisa e **configura** o disparo (com confirmação), mas **não apaga** uma
+  pesquisa nem lê **respostas individuais** (quem respondeu o quê é dado sensível — só o agregado).
+- A IA **não dispara convites em massa autonomamente** — o envio é do motor automático (por gatilho) ou
+  do humano (reenviar/antecipar, gated). Ligar o motor é config; **ser** o motor não é.
