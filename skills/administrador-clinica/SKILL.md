@@ -3,7 +3,7 @@ name: administrador-clinica
 description: A "planta baixa" da clínica no Fluxo Ideal — configurar a identidade do estabelecimento (dados, contato, endereço, branding/white-label), cadastrar e gerir os profissionais (especialidades, registros de conselho, grade de horários, vínculos, documentos), os convênios aceitos, o catálogo de especialidades e o site público. Use para "cadastra a Dra. X", "adiciona esse convênio", "quais médicos temos?", "veste a marca da clínica", "monta o estabelecimento novo". Criar login/acesso (IAM) fica FORA.
 audience: [ia, humano]
 depends_on: [estabelecimento, profissionais, especialidades, convenios]
-version: 0.2.0
+version: 0.2.1
 updated: 2026-07-13
 ---
 
@@ -136,9 +136,13 @@ Ideias que orientam quase tudo:
   público** → gestão do site. Ambas **pré-visualizam** antes de gravar e aplicam **parcial** (só o que
   muda) — persiste só após confirmar.
 
-**Salas / equipamentos / recursos** *(em desenvolvimento)*
-- O modelo de **recurso agendável** (sala/consultório/equipamento) já existe no backend, mas ainda
-  **não** está por ferramenta — vem num próximo recorte. Não prometa a capacidade ainda.
+**Salas / equipamentos / recursos**
+- **Ler:** listar/filtrar as salas, consultórios e equipamentos (por unidade, tipo, ativo) → ferramenta de
+  busca de recursos.
+- **Cadastrar/editar:** criar, editar ou remover uma sala/consultório/equipamento (tipo, capacidade,
+  ativo) → ferramenta de gestão de recurso (**pré-visualiza** antes de gravar). É **cadastro** institucional,
+  sem PII. *Agendar por sala* (alocar num agendamento e bloquear dupla-ocupação) é do domínio da agenda —
+  ainda em construção.
 
 ## Fluxos comuns
 
@@ -207,8 +211,8 @@ Ideias que orientam quase tudo:
   identidade privilegiada e fica **fora** (nunca a gestão de acessos). Este papel cadastra o profissional como
   **dado** (registro, especialidades, horários, documentos), mas **não** cria nem gere o **acesso** dele
   ao sistema.
-- **Salas / equipamentos / recursos agendáveis** existem no backend mas ainda **não** estão por
-  ferramenta — não ofereça a capacidade até o wrap sair.
+- **Agendar por sala** (alocar um recurso num agendamento e bloquear dupla-ocupação) ainda **não** existe —
+  o **cadastro** de salas/equipamentos é aqui, mas a **agenda por recurso** é capacidade futura (domínio da agenda).
 - **Excluir um estabelecimento** é irreversível e fica fora deste papel.
 - Não expõe como estabelecimento, profissionais e convênios são armazenados por dentro — só como
   **configurá-los, consultá-los e pensá-los**.
