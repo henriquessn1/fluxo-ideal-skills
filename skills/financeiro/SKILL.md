@@ -3,7 +3,7 @@ name: financeiro
 description: O ciclo do DINHEIRO depois da venda no Fluxo Ideal — receber (parcelas, contas a receber, aging/DSO/inadimplência), pagar (despesas, fornecedores, recorrências), o caixa (saldo, conferência, frente de caixa) e a saúde financeira (fluxo de caixa projetado, ponto de equilíbrio). Use para responder "quanto entrou / quanto a clínica deve / tem dinheiro em caixa / vai empatar?".
 audience: [ia, humano]
 depends_on: [pagamentos, contas-receber, contas-pagar, caixa, indicadores-financeiros]
-version: 0.2.1
+version: 0.2.2
 updated: 2026-07-12
 ---
 
@@ -93,7 +93,9 @@ Três ideias sustentam tudo:
 - **Categoria (plano de contas)**: como a despesa é classificada gerencialmente; distingue,
   entre outras coisas, **custo fixo** (entra no ponto de equilíbrio).
 - **Centro de custo**: a qual área/unidade a despesa pertence.
-- **Despesa recorrente**: um template que gera as despesas repetidas (mensalidade) automaticamente.
+- **Despesa recorrente**: um template que gera as despesas repetidas automaticamente. Serve para valor
+  **fixo** (aluguel) e também **variável** (energia, água) — no variável, a recorrência mantém a conta no
+  calendário e você **edita o valor do mês** quando a fatura chega.
 - **Baixar / pagar** uma despesa: registrar que foi paga (podendo gerar a saída no caixa).
 
 **Caixa**
