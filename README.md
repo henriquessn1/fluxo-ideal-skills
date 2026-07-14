@@ -46,6 +46,7 @@ Cada skill serve aos dois públicos no mesmo arquivo — a diferença está na d
 | [indicadores](skills/indicadores/SKILL.md) | BI / gestão | dashboard executivo cross-domínio, significado dos KPIs, exportação de dados | ✅ |
 | [administrador-clinica](skills/administrador-clinica/SKILL.md) | Config da clínica | dados do estabelecimento, branding, profissionais, convênios | ✅ |
 | [gestor-tarefas](skills/gestor-tarefas/SKILL.md) | Tarefas internas | criar/atribuir/mover/buscar afazeres da equipe, minhas pendências | ✅ |
+| [reportar-problema](skills/reportar-problema/SKILL.md) | Qualidade (feedback ao produto) | reportar bug (evidência esperado×obtido) / sugerir melhoria / acompanhar o desfecho — seguro, universal, sem PII | ✅ |
 
 ## Linguagem: humano vs. IA
 
