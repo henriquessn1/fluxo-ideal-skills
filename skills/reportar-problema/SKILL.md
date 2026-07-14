@@ -3,7 +3,7 @@ name: reportar-problema
 description: Como a IA reporta um BUG ou sugere uma MELHORIA do próprio sistema Fluxo Ideal — e acompanha o desfecho. É a ponte de qualidade: cada report vira um registro estruturado no backlog do time. Reportar é SEGURO e não conserta nada (cai numa fila de revisão). Use quando encontrar um erro/resultado incorreto ao operar uma ferramenta ou tela, tiver uma ideia de melhoria, ou quiser saber o que aconteceu com o que você reportou.
 audience: [ia, humano]
 depends_on: [feedback, qualidade, melhoria-continua]
-version: 0.1.0
+version: 0.1.1
 updated: 2026-07-14
 ---
 
@@ -16,8 +16,9 @@ Fluxo Ideal. É o multiplicador silencioso: muitas IAs em muitas clínicas exerc
 tempo todo, cada tropeço virando conhecimento acionável.
 
 ## Quando usar
-- Você **operou uma ferramenta/tela e deu errado**: erro, resultado incorreto, comportamento
-  inesperado (ex.: "salvei e voltou sem o campo", "o total não bateu", "a ação retornou erro").
+- Você **operou uma ferramenta e deu errado**: erro, resultado incorreto, comportamento inesperado
+  (ex.: "a ferramenta de gravar devolveu o registro **sem o campo que enviei**", "o total do relatório
+  **não bateu** com a soma dos itens", "a ação **retornou erro** mesmo com um filtro válido").
 - Você percebeu uma **melhoria**: um passo que poderia ser automatizado, uma informação que
   faltou, uma ideia que ajudaria a clínica.
 - Você quer **saber o desfecho** de um bug/sugestão que **você** reportou antes (foi corrigido?
@@ -48,6 +49,11 @@ Reportar é **registrar evidência**, não pedir conserto na hora:
 
 Ideias que sustentam tudo:
 
+- **Você reporta do seu ponto de vista: a FERRAMENTA.** Você opera o sistema por **ferramentas**
+  (não pelas telas da Central), então seus reports são quase sempre sobre **comportamento de
+  ferramenta**: um resultado errado, um **campo que sumiu na resposta**, um **filtro que falta**, ou
+  ter que **encadear duas ferramentas** para o que devia ser uma. Descreva assim — não em "cliques de
+  tela" que você nem usa.
 - **Reportar ≠ consertar.** Seu report **não** corrige o problema nem vira uma tarefa por mágica —
   ele entra numa **fila de revisão** onde o time classifica e decide. Não prometa ao usuário que
   "já foi corrigido"; prometa que "foi registrado".
@@ -83,7 +89,7 @@ Ideias que sustentam tudo:
 
 - **Reportar um bug** → a ferramenta de **reporte de bug**. Exige a **evidência**: descreva o que
   **aconteceu** e o que você **esperava**. Ajuda muito informar a **área** afetada (ex.: agenda,
-  vendas, atendimento), a **tela/rota**, os **passos** para reproduzir e a **severidade**. **Sem
+  vendas, atendimento), a **ferramenta/rota**, os **passos** para reproduzir e a **severidade**. **Sem
   PII.**
 - **Sugerir uma melhoria** → a ferramenta de **sugestão**. Descreva a ideia e, se souber, a **área**
   a que se aplica. Sem PII.
@@ -100,15 +106,17 @@ PII) → depois, se quiser, **consulte o desfecho**.
 1. Confirme que é mesmo um **bug do sistema** (uma ferramenta/tela que se comportou errado) — não
    uma dúvida de como usar, nem um problema do paciente.
 2. Monte a **evidência**: o que você **esperava** que acontecesse × o que **aconteceu**; em qual
-   **área/tela**; e os **passos** para reproduzir, se der.
+   **área/ferramenta**; e os **passos** para reproduzir, se der.
 3. Escolha a **severidade** com honestidade (um total errado de dinheiro é mais grave que um rótulo
    torto).
 4. **Reporte** — sem nenhum dado de paciente no texto. O sistema confirma o registro (não a correção).
 5. Diga ao usuário que **foi registrado** (não que "já foi corrigido").
 
 ### Sugerir uma melhoria
-1. Descreva o **atrito** ou a **ideia** de forma concreta ("depois de marcar, eu tenho que abrir
-   outra tela para confirmar — poderia ser um passo só").
+1. Descreva o **atrito** ou a **ideia** de forma concreta, **do jeito que você opera** (por
+   ferramenta, não por tela): p.ex. *"para achar um atendimento eu preciso buscar o paciente primeiro
+   e depois cruzar — seria melhor buscar o atendimento direto pelo nome do paciente"*, ou *"a
+   ferramenta de busca não tem filtro por período, então trago tudo e filtro na mão"*.
 2. Aponte a **área**, se souber. Sem PII.
 3. **Sugira**. Vira um registro para o time avaliar.
 
