@@ -12,7 +12,8 @@
 - [auxiliar-medico](skills/auxiliar-medico/SKILL.md): o fluxo operacional do atendimento — check-in, etapas de estado, comentários da equipe, pendências e métricas.
 - [medico](skills/medico/SKILL.md): o papel médico assistido por IA — conduzir e documentar o atendimento (adendo write-only), ver a fila do dia; a IA nunca lê o prontuário.
 - [designer-documentos](skills/designer-documentos/SKILL.md): desenhar e gerir documentos — templates (sistema × design), conteúdo/versão, simular, publicar e documentos gerados por paciente.
-- [designer-mensageria](skills/designer-mensageria/SKILL.md): desenhar a comunicação com o paciente — templates, canais (WhatsApp/HSM, e-mail), enviar por intenção e checar entrega.
+- [designer-mensageria](skills/designer-mensageria/SKILL.md): a AUTORIA da comunicação com o paciente — desenhar templates, gerir canais (WhatsApp/HSM, e-mail) e a aprovação de HSM. (Disparar é `comunicacao-paciente`.)
+- [comunicacao-paciente](skills/comunicacao-paciente/SKILL.md): o envio GOVERNADO ao paciente — usar um template pronto para enviar um e-mail agora ou programar uma mensagem automática (quiet-hours, teto, idempotência) e checar a entrega.
 - [financeiro](skills/financeiro/SKILL.md): o dinheiro depois da venda — pagamentos, parcelas, contas a receber/pagar, caixa, fluxo de caixa, ponto de equilíbrio e nota fiscal (NFS-e).
 - [faturamento-convenio](skills/faturamento-convenio/SKILL.md): o financeiro de convênio (TISS) — faturar guias/lotes, importar o demonstrativo da operadora, tratar glosas e recorrer.
 - [designer-agentes](skills/designer-agentes/SKILL.md): como se desenha o comportamento de um agente de IA — persona, capacidades, gatilhos e modo (LLM × script).

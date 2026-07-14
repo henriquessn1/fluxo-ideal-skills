@@ -1,26 +1,26 @@
 ---
 name: designer-mensageria
-description: A comunicação da clínica com o paciente no Fluxo Ideal — templates de mensagem (assunto + corpo com variáveis), canais (e-mail, WhatsApp), e as duas formas de falar com o paciente: enviar AGORA por um template ou emitir uma INTENÇÃO governada (a plataforma decide quando entregar). Use para escrever/ajustar textos que vão ao paciente, disparar um e-mail, mandar um aviso automático e checar se a mensagem foi entregue.
+description: A AUTORIA da comunicação da clínica com o paciente no Fluxo Ideal — desenhar os templates de mensagem (assunto + corpo com variáveis), gerir os canais (e-mail, WhatsApp) e a aprovação de HSM no provedor. Use para escrever/ajustar os textos que vão ao paciente, criar/ativar um template, gerir canais e submeter/acompanhar o HSM. Disparar de fato (enviar/programar/checar entrega) é do operador → skill `comunicacao-paciente`.
 audience: [ia, humano]
 depends_on: [mensagens, templates, canais, entrega]
-version: 0.3.1
+version: 0.4.0
 updated: 2026-07-13
 ---
 
 # Designer de Mensageria
 
-Desenhar e operar a **comunicação da clínica com o paciente**: os **textos padronizados** (templates)
-que a clínica usa, por quais **canais** eles saem, e como se **dispara** uma mensagem e se **confere**
-que ela chegou. É o papel de quem cuida da "voz" da clínica para fora — lembrete de consulta,
-aniversário, aviso, e-mail de rotina.
+**Desenhar** a comunicação da clínica com o paciente: os **textos padronizados** (templates) que a
+clínica usa, por quais **canais** eles saem, e a **aprovação de HSM** no provedor. É o papel de quem
+cuida da "voz" da clínica — lembrete de consulta, aniversário, aviso, e-mail de rotina. **Disparar**
+essa voz (enviar/programar/checar entrega) é do operador → skill `comunicacao-paciente`.
 
 ## Quando usar
 - Escrever ou **ajustar o texto** de uma mensagem que vai ao paciente (assunto/corpo de um lembrete, de
   um e-mail de confirmação).
-- **Enviar** um e-mail ao paciente usando um template pronto.
-- Programar uma **mensagem automática** (lembrete, aniversário, aviso) sem duplicar em varreduras.
+- **Criar/ativar** um template, gerir seus **canais** e a **política de remetente**.
+- **Submeter um HSM** para o provedor aprovar e **acompanhar o status** dessa aprovação.
 - Descobrir **quais templates** a clínica tem e **quais variáveis** cada um espera.
-- **Checar a entrega** — "o lembrete da Maria saiu?", "por que aquele e-mail falhou?".
+- (Para **enviar / programar / checar a entrega** de fato → skill `comunicacao-paciente`.)
 
 ## Quando NÃO usar
 - Redigir o **conteúdo de um documento clínico/comercial** (receita, atestado, orçamento em PDF) →
@@ -61,6 +61,9 @@ CANAIS: e-mail (ativo) · WhatsApp · outros
                               ENTREGA (assíncrona)
                     na fila → enviando → entregue | falhou → re-tenta | falha definitiva
 ```
+
+> **Você desenha o template; disparar (as duas formas acima) é do operador → `comunicacao-paciente`.**
+> Conhecer as duas formas importa para desenhar bem — mas o envio em si não é deste papel.
 
 Ideias que sustentam tudo:
 
@@ -133,17 +136,12 @@ Ideias que sustentam tudo:
   nota do número), roda em **prévia por padrão** e só submete com **confirmação humana**. A ferramenta de
   **listar HSM** acompanha os enviados à Meta (junto com o **status HSM**: aprovado/pendente/rejeitado).
   *Deletar* um HSM na Meta é a caminho (follow-up).
-- **Enviar um e-mail pontual ao paciente agora** → a ferramenta de **envio de e-mail**: escolha o
-  destinatário (o paciente cadastrado, cujo contato a plataforma resolve, **ou** um endereço direto), o
-  template e as variáveis. É **ação real** — confirme com o usuário antes.
-- **Programar uma mensagem automática (lembrete/aniversário/aviso)** → a ferramenta de **intenção de
-  envio**: informe o template, o destinatário e uma **chave de idempotência** (para não duplicar). A
-  plataforma decide o momento (agenda fora de hora, respeita o teto diário).
-- **Saber se a mensagem chegou / por que falhou** → a ferramenta de **checagem de entrega**, com o
-  identificador que o envio devolveu. Ela mostra o estado atual e o histórico de tentativas.
+- **Enviar / programar / checar a entrega** de fato ao paciente **não é deste papel** — é do operador de
+  envio → skill `comunicacao-paciente`. Aqui você entrega o template pronto; lá se dispara.
 
-**Ordem mental para "mandar uma mensagem":** achar o template (slug + variáveis) → decidir *agora* vs
-*intenção governada* → conferir destinatário/remetente → disparar → **checar a entrega**.
+**Ordem mental para "ajustar/criar um template":** achar o template (slug + variáveis) → editar o
+conteúdo por canal em **prévia** → conferir os `{{placeholders}}` e a política de remetente → gravar
+(vale para os **próximos** envios). O **disparo** é `comunicacao-paciente`.
 
 ## Fluxos comuns
 
@@ -156,39 +154,13 @@ Ideias que sustentam tudo:
 5. Se for um template **crítico/transacional** (verificação, código de acesso, link de assinatura,
    convite de pesquisa), redobre o cuidado — editar errado quebra automações; confirme explicitamente.
 
-### Enviar um e-mail agora ao paciente
-1. **Ache o template** e as variáveis que ele espera.
-2. Escolha o destinatário: o **paciente** (a plataforma resolve o contato) **ou** um **endereço
-   direto** — um dos dois.
-3. Preencha as variáveis; se o template exige **remetente próprio**, use o e-mail do próprio usuário.
-4. **Confirme com o usuário** (é e-mail real, não idempotente — duas chamadas mandam dois e-mails) e
-   dispare.
-5. **Cheque a entrega** com o identificador retornado.
-
-### Programar mensagem automática (lembrete/aniversário)
-1. **Ache o template** apropriado.
-2. Emita a **intenção** com uma **chave de idempotência** determinística (ex.: um marcador do evento +
-   a data — **sem dado pessoal na chave**), para que uma varredura repetida **não duplique**.
-3. Confie na plataforma para o **quando**: fora do horário da clínica a mensagem é **agendada** para o
-   expediente; se o **teto diário** estourou, ela **não** é enviada (a resposta diz qual caso ocorreu).
-
-### Investigar "não chegou"
-1. Pegue o **identificador** do envio.
-2. **Cheque a entrega**: *na fila/enviando* = ainda em curso; **entregue** = saiu ao provedor;
-   **falhou** = há re-tentativas em andamento; **falha definitiva** = esgotou — leia o histórico de
-   tentativas para o motivo.
-3. Confirme premissas: o template **existe e está ativo**? O destinatário tem contato válido? A
-   política de remetente foi respeitada?
+> **Enviar agora, programar mensagem automática e investigar "não chegou"** são fluxos do operador de
+> envio → skill `comunicacao-paciente`.
 
 ## Regras e invariantes
 - **Template é molde** — o texto final só existe **no envio**, com as variáveis preenchidas.
 - **Editar template afeta o futuro, nunca o passado** — envios já disparados não mudam.
 - **Cada canal tem sua versão** e o template só sai pelos **canais permitidos**.
-- **Enviar ≠ entregar** — a entrega é assíncrona; sempre há um passo de **checagem** (com
-  re-tentativas antes de desistir).
-- **Intenção governada é para o automático** — idempotência **obrigatória** (não duplica), respeita
-  **horário** e **teto diário**. Envio pontual é o "agora"; não confunda os dois.
-- **Nunca coloque dado pessoal na chave de idempotência.**
 - **Texto verificado (HSM) não vira texto livre** — em canais verificados, preencha variáveis; não
   reescreva o conteúdo aprovado (risco de phishing/bloqueio).
 - **O vínculo do HSM com a Meta é sagrado** — ao ativar/desativar ou editar a versão de um canal
@@ -204,8 +176,10 @@ Ideias que sustentam tudo:
 ## Limites / o que esta skill NÃO cobre
 - Não cobre o **conteúdo dos documentos** que a mensagem carrega (receita, atestado, orçamento) →
   `designer-documentos`.
-- Não cobre a **conversa/ticket** com o paciente (thread, atribuição, resolução, nota interna) → skill
-  de conversas/tickets.
+- **Enviar / programar / checar a entrega** de fato ao paciente → skill `comunicacao-paciente` (o
+  operador de envio). Aqui só se **desenha** o template.
+- Não cobre a **conversa/ticket** com o paciente (thread, atribuição, resolução, nota interna) →
+  skill `conversas`.
 - Não cobre **pesquisa de satisfação/NPS** → skill `pesquisas-satisfacao`.
 - **Criar template, editar metadados (política de remetente), ativar/desativar e gerir canais** agora
   são **por ferramenta** (autoria). Continuam **fora**: **excluir** template, **envio em

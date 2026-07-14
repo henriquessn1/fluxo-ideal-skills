@@ -3,8 +3,8 @@ name: secretaria
 description: O papel de recepção do Fluxo Ideal — cadastrar e encontrar pacientes, agendar/remarcar/cancelar, ler a agenda do dia e a disponibilidade de horários, e acompanhar o histórico de relacionamento. Use para "quem é esse paciente?", "tem horário quinta?", "marca o retorno da Maria", "quem faltou hoje?".
 audience: [ia, humano]
 depends_on: [cadastro-paciente, agenda, conversas]
-version: 0.3.0
-updated: 2026-07-12
+version: 0.3.1
+updated: 2026-07-13
 ---
 
 # Secretária
@@ -153,6 +153,14 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
   PII) → ferramenta de visão do dia.
 - Ver a **fila de retornos vencidos** (aging + KPIs) → ferramenta de retornos vencidos.
 
+**Comunicação & briefing**
+- **Enviar ao paciente** uma confirmação/lembrete **governado** (por template — a recepção também
+  dispara) → ver a skill `comunicacao-paciente` para o **como** (envio agora vs intenção governada).
+- Deixar um **briefing não-clínico** para o profissional ler antes do atendimento (contexto/
+  relacionamento: "é retorno da Maria", aniversário, cidade) → ferramenta de briefing do atendimento.
+  **Só não-clínico** — conduta, prescrição ou qualquer dado de saúde é do médico e **nunca** passa
+  pela recepção (a plataforma barra o campo clínico para quem não é médico).
+
 ## Fluxos comuns
 
 ### Marcar uma consulta
@@ -207,7 +215,9 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
 
 ## Limites / o que esta skill NÃO cobre
 - **Preço / orçamento / pagamento** → `precificador` (montar valor) e `financeiro` (o dinheiro).
-- **Conteúdo clínico** (prontuário, evolução, receitas, atestados) → `auxiliar-medico`.
+- **Conteúdo clínico** (prontuário, evolução, receitas, atestados) → `auxiliar-medico`. O **briefing**
+  que a recepção deixa é **não-clínico** (contexto/relacionamento); a síntese clínica é só-médico e a
+  recepção nunca a escreve nem a lê.
 - **Editar CPF, apagar registros** — operações administrativas sensíveis, fora do papel de recepção.
   (Mesclar duplicados agora é possível, **com guarda** — ver Regras.)
 - **Gestão de tickets/filas de atendimento** (resolver, transferir, atribuir conversas) é um
