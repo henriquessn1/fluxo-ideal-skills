@@ -28,6 +28,12 @@
 - [reportar-e-sugerir](https://fluxoideal.com/skills/reportar-e-sugerir/SKILL.md): reportar um bug ou sugerir uma melhoria do próprio sistema (de suavizar um atrito a apontar uma capacidade que falta) — com evidência (esperado × obtido), sem PII — e acompanhar o desfecho. Ação segura e universal (qualquer papel).
 - [navegar-central](https://fluxoideal.com/skills/navegar-central/SKILL.md): como GUIAR o usuário até a tela certa da Central (o painel da clínica) — sem navegar por ele — para as ações que são dele (importar um time de agentes, conceder um acesso, configurar): o caminho, os passos, e um link clicável quando se sabe o endereço da Central. Universal (qualquer papel).
 
+## Agents (times de agentes instaláveis)
+
+Diferente de uma skill (conhecimento), um time de agentes é uma automação que a clínica IMPORTA por link na Central e põe para AGIR. Cada ação cita uma capability por nome (sem rota interna); a instalação roda com o acesso de quem importa (não escala privilégio) e mostra um cartão de risco antes de aplicar.
+
+- [Agents — visão geral, charter e lista de times](https://github.com/henriquessn1/fluxo-ideal-skills/blob/main/agents/README.md): briefing (contexto do paciente), confirmacao-presenca (confirma por WhatsApp e triage), jornada-cuidado (vincula tarefas e avança fases), jornada-avisos (avisa pendências de SLA).
+
 ## Meta
 
 - [README](https://github.com/henriquessn1/fluxo-ideal-skills/blob/main/README.md): visão geral, públicos e como usar.

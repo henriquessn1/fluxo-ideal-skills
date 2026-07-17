@@ -1,0 +1,66 @@
+{
+  "chave": "jornada-avisos",
+  "versao": "1.0",
+  "escopo": "por-tenant",
+  "roles": [
+    {
+      "nome": "botfn-jornada-avisos",
+      "grants": [
+        "jornada:read",
+        "notificacao:broadcast",
+        "notificacao:enviar"
+      ]
+    }
+  ],
+  "agentes": [
+    {
+      "chave": "jornada_avisos",
+      "tipo": "script",
+      "roles": [
+        "botfn-jornada-avisos"
+      ],
+      "triggers": [
+        {
+          "cron": "0 * * * *",
+          "enabled": true
+        },
+        {
+          "event_type": "atendimento.jornada_fase_recalculada",
+          "enabled": false
+        }
+      ],
+      "config": {
+        "script": "// jornada_avisos (JOR-10 #770) — agente `script` (MACRO). Comportamento = ESTE arquivo (DADO).\n//\n// DOIS ramos, escolhidos pelo gatilho:\n//   - REATIVO (event.event_type == 'atendimento.jornada_fase_recalculada'): avisa \"fase avançou\"\n//     — SÓ em avanço (confere a ORDEM das fases via a capability buscar_fase; fail-open se não achar).\n//     ⚠️ Este gatilho nasce DESLIGADO no manifesto (enabled:false) p/ NÃO duplicar com o\n//     `stream_consumer_jornada` que já roda no notification-center. Ligar aqui = aposentar lá\n//     (notification-center#109).\n//   - CRON (sem event_type): varre a capability listar_pendencias_sla e avisa a equipe sobre requisito\n//     obrigatório ALÉM DO PRAZO / jornada SEM MOVIMENTO (Fatia 2 — não há evento p/ \"nada aconteceu\").\n//\n// Config editável POR-CLÍNICA (sem redeploy) — é aqui que se desliga/restringe/exclui:\n//   `alvo`        { tipo:'broadcast' }  ou  { tipo:'papel', papel:'recepcao' }\n//   `silenciados` [usernames]  → excluídos do broadcast (o \"usuário chato\")\n//   `sla_dias`    0 = requisito estritamente vencido/hoje; >0 = look-ahead (avisa vencendo)\n//   `parado_dias` jornada sem recomputo de fase há N dias\n//\n// Injetados pelo runtime: event, config, context, call() -> {ok,status_code,body}, log().\n\nvar cfg = config || {};\nvar et = (event && event.event_type) ? String(event.event_type) : '';\n\nfunction unwrap(r) {\n  if (!r || !r.ok) return null;\n  var b = r.body;\n  return (b && b.data !== undefined) ? b.data : b;\n}\n\n// Dispara o aviso de equipe pelo notification-center, respeitando `alvo`/`silenciados`.\n// broadcast → a capability notificar (schema PROÍBE campo `broadcast`/`group_id`);\n// papel     → a capability notificar_grupo com group_id (targeted).\nfunction notificar(nivel, titulo, texto, icone) {\n  var message = { type: nivel, title: titulo, text: texto, icon: icone };\n  var alvo = cfg.alvo || {};\n  if (alvo.tipo === 'papel' && alvo.papel) {\n    return call('notificar_grupo', { type: 'mensagem', message: message, group_id: String(alvo.papel) });\n  }\n  var payload = { type: 'mensagem', message: message };\n  if (cfg.silenciados && cfg.silenciados.length) payload.exclude_users = cfg.silenciados;\n  return call('notificar', payload);\n}\n\n// ---------------- RAMO REATIVO: fase avançou (nasce DESLIGADO) ----------------\nif (et === 'atendimento.jornada_fase_recalculada') {\n  var subj = event.subject || {}, safe = event.payload_safe || {};\n  var anterior = safe.fase_anterior, atual = safe.fase_atual;\n  if (!atual || atual === anterior) return { skip: 'sem_mudanca' };\n\n  var avancou = true; // fail-open: sem ordem confiável, avisa (melhor que engolir avanço real)\n  var faseObj = unwrap(call('buscar_fase', { id: subj.jornada_id }));\n  if (faseObj && faseObj.fases && faseObj.fases.length) {\n    var ordem = {};\n    for (var i = 0; i < faseObj.fases.length; i++) { ordem[faseObj.fases[i].key] = faseObj.fases[i].ordem; }\n    if (ordem[anterior] !== undefined && ordem[atual] !== undefined) avancou = ordem[atual] > ordem[anterior];\n  }\n  if (!avancou) return { skip: 'regressao', de: anterior, para: atual };\n\n  notificar('info', 'Jornada — fase avançou', 'A jornada de um paciente avançou de fase.', 'mdi-flag-checkered');\n  return { ok: true, ramo: 'reativo', de: anterior, para: atual };\n}\n\n// ---------------- RAMO CRON: varredura SLA / parada ----------------\nvar prazoDias = (cfg.sla_dias !== undefined && cfg.sla_dias !== null) ? cfg.sla_dias : 0;\nvar paradoDias = (cfg.parado_dias !== undefined && cfg.parado_dias !== null) ? cfg.parado_dias : 7;\n\nvar res = unwrap(call('listar_pendencias_sla', { prazo_dias: prazoDias, parado_dias: paradoDias })) || {};\nvar itens = res.itens || [];\nif (!itens.length) { log('jornada_avisos: sem pendências'); return { ok: true, ramo: 'cron', com_pendencia: 0 }; }\n\nvar vencidas = 0, paradas = 0;\nfor (var k = 0; k < itens.length; k++) {\n  if (itens[k].requisitos_vencidos && itens[k].requisitos_vencidos.length) vencidas++;\n  if (itens[k].parada) paradas++;\n}\nvar partes = [];\nif (vencidas) partes.push(vencidas + ' com requisito além do prazo');\nif (paradas) partes.push(paradas + ' sem movimento');\n\n// Um resumo por varredura (anti-spam) — a equipe abre o board p/ o detalhe. Sem PII.\nnotificar('warning', 'Jornadas — atenção',\n  itens.length + ' jornada(s) de pacientes precisam de atenção (' + partes.join(', ') + '). Confira o board de jornadas.',\n  'mdi-alert');\nreturn { ok: true, ramo: 'cron', com_pendencia: itens.length, vencidas: vencidas, paradas: paradas };\n",
+        "alvo": {
+          "tipo": "broadcast"
+        },
+        "silenciados": [],
+        "sla_dias": 0,
+        "parado_dias": 7,
+        "acoes": [
+          {
+            "nome": "listar_pendencias_sla",
+            "capability": "atendimento.listar_pendencias_sla",
+            "kind": "internal"
+          },
+          {
+            "nome": "buscar_fase",
+            "capability": "atendimento.buscar_fase",
+            "kind": "internal"
+          },
+          {
+            "nome": "notificar",
+            "capability": "notificacao.notificar",
+            "kind": "internal"
+          },
+          {
+            "nome": "notificar_grupo",
+            "capability": "notificacao.notificar_grupo",
+            "kind": "internal"
+          }
+        ]
+      }
+    }
+  ],
+  "knobs": []
+}

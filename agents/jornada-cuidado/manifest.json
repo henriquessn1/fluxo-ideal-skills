@@ -1,0 +1,200 @@
+{
+  "chave": "jornada-cuidado",
+  "versao": "1.1",
+  "escopo": "por-tenant",
+  "roles": [
+    {
+      "nome": "botfn-jornada-binder",
+      "grants": [
+        "jornada:read",
+        "tarefas:listar",
+        "tarefas:editar"
+      ]
+    },
+    {
+      "nome": "botfn-jornada-closer",
+      "grants": [
+        "jornada:read",
+        "jornada:write",
+        "tarefas:listar",
+        "tarefas:mover"
+      ]
+    }
+  ],
+  "agentes": [
+    {
+      "chave": "jornada_binder",
+      "tipo": "script",
+      "roles": [
+        "botfn-jornada-binder"
+      ],
+      "triggers": [
+        {
+          "event_type": "vendas.tcle_criado",
+          "enabled": true
+        },
+        {
+          "event_type": "vendas.solicitacao_autorizacao_criada",
+          "enabled": true
+        },
+        {
+          "event_type": "agendamento.agendamento_criado",
+          "enabled": true
+        }
+      ],
+      "config": {
+        "script": "// jornada_binder (Jornada Fase B #760) — agente `script` (MACRO). Comportamento = ESTE arquivo (DADO).\n//\n// LATE-BINDING: quando uma entidade-alvo NASCE (evento de criação), liga o(s) slot(s) da\n// jornada ativa do paciente que a AGUARDAM (contexto.espera) a essa entidade concreta,\n// gravando `contexto.entidade_ref = {tipo, id}`. NÃO muda estado — quem fecha é o closer.\n//\n// Config-driven (tudo configurável): `config.mapa_criacao` mapeia event_type -> {entidade, id_campo}.\n// O FILTRO do que cada slot aguarda vive no PRÓPRIO slot (contexto.espera.filtro), não aqui —\n// assim um mesmo evento (ex.: agendamento_criado) só liga o slot cujo filtro bate (ex.: cirurgia).\n//\n// Injetados pelo runtime: event ({event_type, subject, payload_safe}), config, context, call(), log().\n//   call(action, payload) -> { ok, status_code, body }  (só ações curadas; RBAC do SA é a jaula).\n\nvar subject = event.subject || {};\nvar safe = event.payload_safe || {};\nvar et = String(event.event_type || '');\n\nvar mapa = config.mapa_criacao || {};\nvar regra = mapa[et];\nif (!regra) { log('binder: sem regra de criação p/ ' + et); return { skip: 'sem_regra', event_type: et }; }\n\nvar clienteId = subject.cliente_id;\nif (!clienteId) { log('binder: evento sem cliente_id'); return { skip: 'sem_cliente' }; }\nclienteId = String(clienteId);\n\n// id da entidade que nasceu (fallback robusto p/ variação de nome no subject entre produtores).\nvar entId = subject[regra.id_campo] || subject[regra.entidade + '_id'] || subject.id;\nif (!entId) { log('binder: sem id da entidade em ' + et); return { skip: 'sem_entidade_id' }; }\nentId = String(entId);\n\n// --- helpers -----------------------------------------------------------------\nfunction unwrap(r) { var b = (r && r.body !== undefined) ? r.body : r; return (b && b.data !== undefined) ? b.data : b; }\nfunction itens(d) { if (!d) return []; if (d.length !== undefined) return d; if (d.items) return d.items; return []; }\nfunction primeiroId(d) { var a = itens(d); return (a[0] && a[0].id) ? String(a[0].id) : null; }\nfunction vincJornada(t) {\n  var vs = (t && t.vinculos) || [];\n  for (var i = 0; i < vs.length; i++) { if (vs[i] && vs[i].tipo === 'jornada') return vs[i]; }\n  return null;\n}\n// Igualdade simples sobre subject (preferencial) + payload_safe. Filtro null/ausente = passa.\nfunction filtroBate(filtro, s, p) {\n  if (!filtro) return true;\n  for (var k in filtro) {\n    if (!filtro.hasOwnProperty(k)) continue;\n    var v = (s[k] !== undefined) ? s[k] : p[k];\n    if (String(v) !== String(filtro[k])) return false;\n  }\n  return true;\n}\n// Ação CRÍTICA: TEM de suceder (senão vira false-success) — aborta o ramo (status=erro).\nfunction callStrict(action, payload, oQue) {\n  var r = call(action, payload);\n  if (r && r.ok === false) throw new Error('ação crítica falhou (' + oQue + '): HTTP ' + r.status_code);\n  return r;\n}\n\n// --- fluxo -------------------------------------------------------------------\nvar jornadaId = primeiroId(unwrap(call('buscar_jornada_ativa', { cliente_id: clienteId })));\nif (!jornadaId) { log('binder: paciente sem jornada ativa'); return { skip: 'sem_jornada', cliente_id: clienteId }; }\n\nvar tarefas = itens(unwrap(call('listar_tarefas', { jornada_id: jornadaId })));\nvar ligados = [], conflitos = [];\n\nfor (var i = 0; i < tarefas.length; i++) {\n  var t = tarefas[i];\n  var v = vincJornada(t);\n  if (!v) continue;\n  var ctx = v.contexto || {};\n  var espera = ctx.espera;\n  if (!espera || espera.entidade !== regra.entidade) continue;   // slot não aguarda essa entidade\n  if (!filtroBate(espera.filtro, subject, safe)) continue;       // filtro do slot não bate (ex.: não-cirurgia)\n\n  if (ctx.entidade_ref && ctx.entidade_ref.id) {\n    // Já ligado. Idempotente se for a MESMA entidade; conflito se for outra (nunca chuta).\n    if (String(ctx.entidade_ref.id) !== entId) conflitos.push(t.id);\n    continue;\n  }\n\n  // Merge não-destrutivo (o endpoint substitui o contexto inteiro → reenviar tudo).\n  var novoCtx = {};\n  for (var k in ctx) { if (ctx.hasOwnProperty(k)) novoCtx[k] = ctx[k]; }\n  novoCtx.entidade_ref = { tipo: regra.entidade, id: entId };\n  callStrict('set_contexto', { id: t.id, tipo: 'jornada', ref_id: String(v.ref_id), contexto: novoCtx }, 'set_contexto ' + t.id);\n  ligados.push(t.id);\n}\n\n// Conflito → impedimento manual \"precisa vincular\" (decisão do handover: no ambíguo, nunca chuta).\nfor (var c = 0; c < conflitos.length; c++) {\n  call('criar_impedimento', {\n    id: conflitos[c],\n    descricao: 'Late-binding: chegou uma nova ' + regra.entidade + ' (' + entId + '), mas este slot já está vinculado a outra. Vincular manualmente.'\n  });\n}\n\nlog('binder: jornada ' + jornadaId + ' — ' + ligados.length + ' slot(s) ligado(s) a ' + regra.entidade + ' ' + entId + ' (' + conflitos.length + ' conflito(s))');\nreturn { jornada_id: jornadaId, entidade: regra.entidade, entidade_id: entId, ligados: ligados, conflitos: conflitos };\n",
+        "mapa_criacao": {
+          "vendas.tcle_criado": {
+            "entidade": "tcle",
+            "id_campo": "tcle_id"
+          },
+          "vendas.solicitacao_autorizacao_criada": {
+            "entidade": "solicitacao_autorizacao",
+            "id_campo": "solicitacao_autorizacao_id"
+          },
+          "agendamento.agendamento_criado": {
+            "entidade": "agendamento",
+            "id_campo": "agendamento_id"
+          }
+        },
+        "acoes": [
+          {
+            "nome": "buscar_jornada_ativa",
+            "capability": "atendimento.buscar_jornada_ativa",
+            "kind": "internal"
+          },
+          {
+            "nome": "listar_tarefas",
+            "capability": "tarefas.listar_tarefas",
+            "kind": "internal"
+          },
+          {
+            "nome": "set_contexto",
+            "capability": "tarefas.set_contexto",
+            "kind": "internal"
+          },
+          {
+            "nome": "criar_impedimento",
+            "capability": "tarefas.criar_impedimento",
+            "kind": "internal"
+          }
+        ]
+      }
+    },
+    {
+      "chave": "jornada_closer",
+      "tipo": "script",
+      "roles": [
+        "botfn-jornada-closer"
+      ],
+      "triggers": [
+        {
+          "event_type": "vendas.tcle_medico_assinou",
+          "enabled": true
+        },
+        {
+          "event_type": "vendas.tcle_paciente_assinou",
+          "enabled": true
+        },
+        {
+          "event_type": "vendas.documento_assinado",
+          "enabled": true
+        },
+        {
+          "event_type": "vendas.solicitacao_autorizacao_transicao",
+          "enabled": true
+        },
+        {
+          "event_type": "agendamento.agendamento_criado",
+          "enabled": true
+        },
+        {
+          "event_type": "atendimento.procedimento_executado",
+          "enabled": true
+        }
+      ],
+      "config": {
+        "script": "// jornada_closer (Jornada Fase B #760) — agente `script` (MACRO). Comportamento = ESTE arquivo (DADO).\n//\n// AUTO-CLOSE: quando uma entidade-alvo muda de estado (evento de status), aplica o desfecho no\n// slot correspondente da jornada ativa do paciente (fecha = estado `done`). Config-driven:\n// `config.mapa_desfecho` mapeia event_type -> { papel, id_campo, entidade, estado, filtro?, quando? }.\n//   - `filtro`: igualdade obrigatória sobre subject/payload_safe (ex.: tipo_servico_id=cirurgia);\n//   - `quando`: valor do campo tem de estar numa LISTA (ex.: status_para ∈ [aprovado, aprovado_parcial]).\n// Acha o slot por `contexto.entidade_ref` (preciso, pós-binding) OU por `contexto.papel` (fallback,\n// funciona mesmo sem o binder ter rodado). Idempotente: se já está no estado alvo, no-op.\n//\n// Injetados pelo runtime: event ({event_type, subject, payload_safe}), config, context, call(), log().\n\nvar subject = event.subject || {};\nvar safe = event.payload_safe || {};\nvar et = String(event.event_type || '');\n\nvar mapa = config.mapa_desfecho || {};\nvar regra = mapa[et];\nif (!regra) { log('closer: sem regra de desfecho p/ ' + et); return { skip: 'sem_regra', event_type: et }; }\n\n// --- guards ------------------------------------------------------------------\nfunction valorDe(k, s, p) { return (s[k] !== undefined) ? s[k] : p[k]; }\nfunction filtroBate(filtro, s, p) {\n  if (!filtro) return true;\n  for (var k in filtro) { if (!filtro.hasOwnProperty(k)) continue;\n    if (String(valorDe(k, s, p)) !== String(filtro[k])) return false; }\n  return true;\n}\nfunction quandoBate(quando, s, p) {\n  if (!quando) return true;\n  for (var k in quando) {\n    if (!quando.hasOwnProperty(k)) continue;\n    var v = valorDe(k, s, p);\n    var permitidos = quando[k]; var ok = false;\n    for (var i = 0; i < permitidos.length; i++) { if (String(permitidos[i]) === String(v)) { ok = true; break; } }\n    if (!ok) return false;\n  }\n  return true;\n}\nif (!filtroBate(regra.filtro, subject, safe)) { log('closer: filtro não bate ' + et); return { skip: 'filtro', event_type: et }; }\nif (!quandoBate(regra.quando, subject, safe)) { log('closer: `quando` não satisfeito ' + et); return { skip: 'quando', event_type: et }; }\n\nvar clienteId = subject.cliente_id;\nif (!clienteId) { log('closer: evento sem cliente_id'); return { skip: 'sem_cliente' }; }\nclienteId = String(clienteId);\n\nvar entId = regra.id_campo ? (subject[regra.id_campo] || (regra.entidade ? subject[regra.entidade + '_id'] : null)) : null;\nif (entId) entId = String(entId);\n\n// --- helpers -----------------------------------------------------------------\nfunction unwrap(r) { var b = (r && r.body !== undefined) ? r.body : r; return (b && b.data !== undefined) ? b.data : b; }\nfunction itens(d) { if (!d) return []; if (d.length !== undefined) return d; if (d.items) return d.items; return []; }\nfunction primeiroId(d) { var a = itens(d); return (a[0] && a[0].id) ? String(a[0].id) : null; }\nfunction vincJornada(t) { var vs = (t && t.vinculos) || []; for (var i = 0; i < vs.length; i++) { if (vs[i] && vs[i].tipo === 'jornada') return vs[i]; } return null; }\nfunction callStrict(action, payload, oQue) { var r = call(action, payload); if (r && r.ok === false) throw new Error('ação crítica falhou (' + oQue + '): HTTP ' + r.status_code); return r; }\n\n// Chama e devolve {ok, status, data} — distingue \"falhou\" de \"vazio\" (observabilidade).\nfunction chamar(action, payload) {\n  var r = call(action, payload);\n  return { ok: !!(r && r.ok !== false), status: r ? r.status_code : null, data: unwrap(r), raw: r };\n}\n\n// --- fluxo -------------------------------------------------------------------\nvar jr = chamar('buscar_jornada_ativa', { cliente_id: clienteId });\nvar jornadaId = primeiroId(jr.data);\nif (!jornadaId) {\n  // Distingue: erro na chamada (rede/403/5xx) vs realmente sem jornada ativa (200 + vazio).\n  var motivo = jr.ok ? 'sem_jornada' : 'erro_buscar_jornada';\n  log('closer: ' + motivo + ' (http=' + jr.status + ')');\n  return { skip: motivo, http_status: jr.status, ok: jr.ok, amostra: JSON.stringify(jr.data).slice(0, 300) };\n}\n\nvar tl = chamar('listar_tarefas', { jornada_id: jornadaId });\nif (!tl.ok) { log('closer: erro ao listar tarefas (http=' + tl.status + ')'); return { skip: 'erro_listar_tarefas', http_status: tl.status, jornada_id: jornadaId }; }\nvar tarefas = itens(tl.data);\nvar alvo = null;\n\n// 1) Preciso: casa a entidade concreta ligada pelo binder (contexto.entidade_ref.id).\nif (entId) {\n  for (var i = 0; i < tarefas.length; i++) {\n    var v = vincJornada(tarefas[i]); var ctx = (v && v.contexto) || {};\n    if (ctx.entidade_ref && String(ctx.entidade_ref.id) === entId) { alvo = tarefas[i]; break; }\n  }\n}\n// 2) Fallback: por papel (funciona antes do binding / p/ entidades sem ref no evento).\nif (!alvo && regra.papel) {\n  for (var j = 0; j < tarefas.length; j++) {\n    var v2 = vincJornada(tarefas[j]); var ctx2 = (v2 && v2.contexto) || {};\n    if (ctx2.papel === regra.papel) { alvo = tarefas[j]; break; }\n  }\n}\nif (!alvo) { log('closer: nenhum slot p/ papel=' + regra.papel + ' ent=' + entId); return { skip: 'sem_slot', jornada_id: jornadaId }; }\n\nvar estadoAlvo = regra.estado || 'done';\nif (alvo.estado === estadoAlvo || alvo.estado === 'done') {\n  log('closer: slot ' + alvo.id + ' já em ' + alvo.estado + ' — no-op');\n  return { noop: 'ja_no_estado', tarefa: alvo.id, estado: alvo.estado };\n}\n\ncallStrict('mudar_estado', { id: alvo.id, estado: estadoAlvo, forcar: true }, 'mudar_estado ' + alvo.id);\ncall('recompute_fase', { id: jornadaId });   // best-effort: recomputa a fase macro após fechar\nlog('closer: slot ' + alvo.id + ' (papel=' + regra.papel + ') -> ' + estadoAlvo + ' na jornada ' + jornadaId);\nreturn { fechada: alvo.id, papel: regra.papel, estado: estadoAlvo, jornada_id: jornadaId };\n",
+        "mapa_desfecho": {
+          "vendas.tcle_medico_assinou": {
+            "papel": "tcle_medico",
+            "entidade": "tcle",
+            "id_campo": "tcle_id",
+            "estado": "done"
+          },
+          "vendas.tcle_paciente_assinou": {
+            "papel": "tcle_paciente",
+            "entidade": "tcle",
+            "id_campo": "tcle_id",
+            "estado": "done"
+          },
+          "vendas.documento_assinado": {
+            "papel": "tcle_paciente",
+            "entidade": "tcle",
+            "id_campo": "ref_id",
+            "estado": "done",
+            "filtro": {
+              "tipo": "tcle"
+            }
+          },
+          "vendas.solicitacao_autorizacao_transicao": {
+            "papel": "autorizacao_convenio",
+            "entidade": "solicitacao_autorizacao",
+            "id_campo": "solicitacao_autorizacao_id",
+            "estado": "done",
+            "quando": {
+              "status_para": [
+                "aprovado",
+                "aprovado_parcial"
+              ]
+            }
+          },
+          "agendamento.agendamento_criado": {
+            "papel": "cirurgia_agendada",
+            "entidade": "agendamento",
+            "id_campo": "agendamento_id",
+            "estado": "done",
+            "filtro": {
+              "tipo_servico_id": "cirurgia"
+            }
+          },
+          "atendimento.procedimento_executado": {
+            "papel": "cirurgia_realizada",
+            "entidade": "venda_item",
+            "id_campo": "venda_item_id",
+            "estado": "done",
+            "quando": {
+              "tipo_ato": [
+                "procedimento"
+              ]
+            }
+          }
+        },
+        "acoes": [
+          {
+            "nome": "buscar_jornada_ativa",
+            "capability": "atendimento.buscar_jornada_ativa",
+            "kind": "internal"
+          },
+          {
+            "nome": "listar_tarefas",
+            "capability": "tarefas.listar_tarefas",
+            "kind": "internal"
+          },
+          {
+            "nome": "mudar_estado",
+            "capability": "tarefas.mudar_estado",
+            "kind": "internal"
+          },
+          {
+            "nome": "recompute_fase",
+            "capability": "atendimento.recompute_fase",
+            "kind": "internal"
+          }
+        ]
+      }
+    }
+  ],
+  "knobs": []
+}
