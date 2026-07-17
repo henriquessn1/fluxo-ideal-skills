@@ -3,8 +3,8 @@ name: administrador-clinica
 description: A "planta baixa" da clínica no Fluxo Ideal — configurar a identidade do estabelecimento (dados, contato, endereço, branding/white-label), cadastrar e gerir os profissionais (especialidades, registros de conselho, grade de horários, vínculos, documentos), os convênios aceitos, o catálogo de especialidades e o site público. Use para "cadastra a Dra. X", "adiciona esse convênio", "quais médicos temos?", "veste a marca da clínica", "monta o estabelecimento novo". Criar login/acesso (IAM) fica FORA.
 audience: [ia, humano]
 depends_on: [identidade-clinica, profissionais, especialidades, convenios, salas-recursos]
-version: 0.2.1
-updated: 2026-07-13
+version: 0.2.2
+updated: 2026-07-17
 ---
 
 # Administrador da clínica
@@ -128,6 +128,15 @@ Ideias que orientam quase tudo:
 
 **Especialidades**
 - Manter o **catálogo de especialidades** (nome, cor, ícone) → ferramenta de gestão de especialidade.
+
+**Tipos de prontuário (o molde da tela do atendimento)**
+- Listar, criar, editar ou remover os **tipos de prontuário** — o *molde* de tela que o profissional
+  preenche no atendimento (campos, seções) → ferramenta de gestão de tipo de prontuário
+  (**pré-visualiza** antes de gravar). Inclui o **prontuário gráfico/anotável** (#1129): um tipo que
+  carrega um **widget de diagrama** onde o profissional desenha os procedimentos sobre uma imagem
+  anatômica. Para montar um tipo gráfico, você referencia um **diagrama** da biblioteca (ver a skill
+  `designer-documentos` para navegar os diagramas por especialidade). Aqui se define o **molde**; o
+  **desenho** em si é ato clínico, dentro do atendimento (fora deste papel).
 
 **Estabelecimento (identidade / branding / site)**
 - **Ler:** dados do estabelecimento → detalhe/listagem do estabelecimento.

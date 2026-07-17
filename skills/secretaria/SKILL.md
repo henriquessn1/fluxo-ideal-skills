@@ -3,8 +3,8 @@ name: secretaria
 description: O papel de recepção do Fluxo Ideal — cadastrar e encontrar pacientes, agendar/remarcar/cancelar, ler a agenda do dia e a disponibilidade de horários, e acompanhar o histórico de relacionamento. Use para "quem é esse paciente?", "tem horário quinta?", "marca o retorno da Maria", "quem faltou hoje?".
 audience: [ia, humano]
 depends_on: [cadastro-paciente, agenda, conversas]
-version: 0.3.2
-updated: 2026-07-13
+version: 0.3.3
+updated: 2026-07-17
 ---
 
 # Secretária
@@ -134,6 +134,10 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
   cancelamento.
 - **Bloquear** a agenda (almoço, férias, feriado), inclusive **recorrente** → ferramenta de bloqueio.
 - Abrir um **encaixe / horário extra** → ferramenta de agenda extra.
+- **Agendamento privado** (interno/reservado que o paciente **não** deve ser avisado): ao marcar ou
+  abrir um encaixe, defina a **visibilidade** como *privada* → nenhuma notificação automática
+  (confirmação, lembrete, pedido de confirmação) é disparada ao paciente. Omitir = *pública* (padrão,
+  notifica normalmente). Use para horário bloqueado disfarçado, visita externa, compromisso da equipe.
 
 **Relacionamento**
 - Linha do tempo de um paciente ("o que já rolou com ele?") → ferramenta de histórico do cliente.

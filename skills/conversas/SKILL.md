@@ -3,8 +3,8 @@ name: conversas
 description: A operação do atendimento ao paciente no Fluxo Ideal via tickets e filas — o inbox e os contadores do setor, o ciclo de uma conversa (atribuir/transferir/escalar/devolver/pausar/resolver/cancelar/reabrir, com CSAT no fechamento), observar (acompanhar, com prazo), comentar por dentro, marcar a timeline, buscar conversas e histórico, o feed multi-canal do paciente, e detectar conversas frustradas (risco de churn). Responder ao paciente e break-glass ficam FORA. Use para "atende esse ticket", "quantos na fila?", "passa pra recepção", "escala isso", "resolve", "quem está insatisfeito?".
 audience: [ia, humano]
 depends_on: [conversas, tickets, filas, observadores]
-version: 0.2.2
-updated: 2026-07-13
+version: 0.2.3
+updated: 2026-07-17
 ---
 
 # Conversas
@@ -143,6 +143,12 @@ Ideias que sustentam tudo:
   do ticket**.
 - O **feed do paciente** — a linha do tempo **unificada multi-canal** daquele contato → ferramenta de
   **feed do paciente**.
+- **O que aconteceu com UM documento** (o link de orçamento/TCLE que a clínica mandou pro paciente):
+  enviado → **aberto** → assinado → ferramenta de **timeline da entidade** (recorte de um documento,
+  diferente do feed do paciente que junta tudo). E para o forense — se e **quantas vezes** o paciente
+  abriu aquele link, quando, de que aparelho → ferramenta de **aberturas do link**. É a resposta ao
+  clássico *"mandei o orçamento e o paciente diz que não recebeu"* (`total = 0` = nunca abriu). Por
+  LGPD, o IP vem **mascarado** e o aparelho só como família (iPhone/Android/…).
 
 **Achar / contexto**
 - Achar conversas/interações por critério ("no WhatsApp hoje", "com humor negativo", busca textual)

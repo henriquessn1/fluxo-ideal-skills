@@ -43,8 +43,8 @@ name: administrador-clinica
 description: A "planta baixa" da clínica no Fluxo Ideal — configurar a identidade do estabelecimento (dados, contato, endereço, branding/white-label), cadastrar e gerir os profissionais (especialidades, registros de conselho, grade de horários, vínculos, documentos), os convênios aceitos, o catálogo de especialidades e o site público. Use para "cadastra a Dra. X", "adiciona esse convênio", "quais médicos temos?", "veste a marca da clínica", "monta o estabelecimento novo". Criar login/acesso (IAM) fica FORA.
 audience: [ia, humano]
 depends_on: [identidade-clinica, profissionais, especialidades, convenios, salas-recursos]
-version: 0.2.1
-updated: 2026-07-13
+version: 0.2.2
+updated: 2026-07-17
 ---
 
 # Administrador da clínica
@@ -168,6 +168,15 @@ Ideias que orientam quase tudo:
 
 **Especialidades**
 - Manter o **catálogo de especialidades** (nome, cor, ícone) → ferramenta de gestão de especialidade.
+
+**Tipos de prontuário (o molde da tela do atendimento)**
+- Listar, criar, editar ou remover os **tipos de prontuário** — o *molde* de tela que o profissional
+  preenche no atendimento (campos, seções) → ferramenta de gestão de tipo de prontuário
+  (**pré-visualiza** antes de gravar). Inclui o **prontuário gráfico/anotável** (#1129): um tipo que
+  carrega um **widget de diagrama** onde o profissional desenha os procedimentos sobre uma imagem
+  anatômica. Para montar um tipo gráfico, você referencia um **diagrama** da biblioteca (ver a skill
+  `designer-documentos` para navegar os diagramas por especialidade). Aqui se define o **molde**; o
+  **desenho** em si é ato clínico, dentro do atendimento (fora deste papel).
 
 **Estabelecimento (identidade / branding / site)**
 - **Ler:** dados do estabelecimento → detalhe/listagem do estabelecimento.
@@ -603,8 +612,8 @@ name: conversas
 description: A operação do atendimento ao paciente no Fluxo Ideal via tickets e filas — o inbox e os contadores do setor, o ciclo de uma conversa (atribuir/transferir/escalar/devolver/pausar/resolver/cancelar/reabrir, com CSAT no fechamento), observar (acompanhar, com prazo), comentar por dentro, marcar a timeline, buscar conversas e histórico, o feed multi-canal do paciente, e detectar conversas frustradas (risco de churn). Responder ao paciente e break-glass ficam FORA. Use para "atende esse ticket", "quantos na fila?", "passa pra recepção", "escala isso", "resolve", "quem está insatisfeito?".
 audience: [ia, humano]
 depends_on: [conversas, tickets, filas, observadores]
-version: 0.2.2
-updated: 2026-07-13
+version: 0.2.3
+updated: 2026-07-17
 ---
 
 # Conversas
@@ -743,6 +752,12 @@ Ideias que sustentam tudo:
   do ticket**.
 - O **feed do paciente** — a linha do tempo **unificada multi-canal** daquele contato → ferramenta de
   **feed do paciente**.
+- **O que aconteceu com UM documento** (o link de orçamento/TCLE que a clínica mandou pro paciente):
+  enviado → **aberto** → assinado → ferramenta de **timeline da entidade** (recorte de um documento,
+  diferente do feed do paciente que junta tudo). E para o forense — se e **quantas vezes** o paciente
+  abriu aquele link, quando, de que aparelho → ferramenta de **aberturas do link**. É a resposta ao
+  clássico *"mandei o orçamento e o paciente diz que não recebeu"* (`total = 0` = nunca abriu). Por
+  LGPD, o IP vem **mascarado** e o aparelho só como família (iPhone/Android/…).
 
 **Achar / contexto**
 - Achar conversas/interações por critério ("no WhatsApp hoje", "com humor negativo", busca textual)
@@ -1093,8 +1108,8 @@ name: designer-documentos
 description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Use para entender "como esse documento fica" e para criar/editar/publicar um template com segurança.
 audience: [ia, humano]
 depends_on: [documentos-clinicos, templates, catalogo-documentos]
-version: 0.2.1
-updated: 2026-07-12
+version: 0.2.2
+updated: 2026-07-17
 ---
 
 # Designer de Documentos
@@ -1237,6 +1252,17 @@ Quatro ideias sustentam tudo:
 - **Listar/enviar/excluir assets** (logos/imagens) e **ver onde um asset é usado** (antes de excluir)
   → ferramenta que **gerencia assets** (+ consulta de uso). Excluir um asset **em uso** exige
   confirmação/forçar (o sistema mostra onde ele é referenciado).
+
+**Prontuário gráfico (diagramas anatômicos, #1129)**
+- **Navegar a biblioteca de diagramas** — as imagens-base (rosto, corpo, arcada dentária, olho…) sobre
+  as quais o profissional desenha os procedimentos no prontuário **gráfico/anotável**, filtrando por
+  **especialidade** e vendo os **globais da frota** + os do estabelecimento → ferramenta que **lista
+  os diagramas**. Traz só metadados (nome, escopo, dimensões, especialidade), não os bytes da imagem.
+- **Montar o tipo de prontuário gráfico** — criar/editar o **tipo de prontuário** cuja tela carrega um
+  **widget de diagrama** que referencia um desses diagramas → ferramenta de **gestão de tipo de
+  prontuário** (pré-visualiza antes de gravar; o sistema **valida** o widget). Aqui se define o
+  **molde**; o **desenho** em si é ato clínico no atendimento (fora do design). Esse mesmo tipo também
+  é gerível pelo papel `administrador-clinica`.
 
 **Modelos de sistema (Orçamento e TCLE)**
 - **Listar os modelos de sistema** e ver se estão publicados → ferramenta que **lista os templates de
@@ -1616,8 +1642,8 @@ name: financeiro
 description: O ciclo do DINHEIRO depois da venda no Fluxo Ideal — receber (parcelas, contas a receber, aging/DSO/inadimplência), pagar (despesas, fornecedores, recorrências), o caixa (saldo, conferência, frente de caixa) e a saúde financeira (fluxo de caixa projetado, ponto de equilíbrio). Use para responder "quanto entrou / quanto a clínica deve / tem dinheiro em caixa / vai empatar?".
 audience: [ia, humano]
 depends_on: [pagamentos, contas-receber, contas-pagar, caixa, indicadores-financeiros]
-version: 0.3.1
-updated: 2026-07-13
+version: 0.3.2
+updated: 2026-07-17
 ---
 
 # Financeiro
@@ -1796,6 +1822,11 @@ Três ideias sustentam tudo:
 - Documentos que **aguardam assinatura** do paciente (orçamento/TCLE) e **enviar/revogar** o link →
   ferramentas de **assinatura**. Enviar link é **outward-facing** (o paciente recebe e-mail real) →
   confirme antes.
+- **O paciente recebeu/abriu o link que mandei?** (cobrar via link assinado depende disso) →
+  ferramenta de **aberturas do link de assinatura**: mostra se e **quantas vezes** aquele
+  orçamento/TCLE foi aberto, e quando. Por privacidade (LGPD), o IP vem **mascarado** e o aparelho
+  aparece só como família (iPhone/Android/…) — o suficiente para investigar sem expor dado pessoal.
+  `total = 0` significa que o paciente **nunca abriu** — é o caso clássico "diz que não recebeu".
 
 **Ordem mental para "como está o dinheiro da clínica":**
 saldo de caixa (conferido) → contas a receber (o que vai entrar, com aging) → contas a pagar
@@ -2666,8 +2697,8 @@ name: precificador
 description: O sistema de precificação do Fluxo Ideal — como se configura preço (catálogo, tabelas, condições e formas de pagamento, favoritos) e como isso converge em orçamento e venda. Use para entender "quanto custa", como montar um orçamento e por que os valores são o que são.
 audience: [ia, humano]
 depends_on: [precos, catalogo, convenios, condicoes-pagamento, orcamentos]
-version: 0.4.1
-updated: 2026-07-13
+version: 0.4.2
+updated: 2026-07-17
 ---
 
 # Precificador
@@ -2727,7 +2758,7 @@ Três ideias que sustentam tudo:
 **Cobertura**
 - **Cobertura de convênio**: convênio paga; o paciente pode ficar em **R$ 0**. Não é desconto nem gratuidade — há receita do convênio por trás.
 - **Coparticipação**: convênio paga uma parte, paciente outra. O item vale o **cheio**; muda o **rateio entre pagadores**, não o preço.
-- **Autorização de convênio**: alguns procedimentos exigem aval prévio da operadora. É **pré-requisito operacional**, não preço.
+- **Autorização de convênio**: alguns procedimentos exigem aval prévio da operadora. É **pré-requisito operacional**, não preço. Configura-se **por tabela de convênio**, em modalidades: *não requer*, *automática* (online/imediata), *prévia* (auditoria — solicitar e aguardar) ou *OPME* (com anexo de materiais).
 
 **Documentos e ajustes**
 - **Orçamento**: o documento que **junta** itens (snapshot), tabela, cobertura, condição de pagamento, validade e aceite do cliente. É a peça central da precificação.
@@ -2751,7 +2782,12 @@ Três ideias que sustentam tudo:
 **Hoje, por ferramenta:**
 - Ver/gerir procedimentos, produtos e pacotes → ferramentas de catálogo.
 - Ver e gerir as tabelas de preço → ferramentas de tabelas de preço.
-- Ver/definir o preço de um item numa tabela (inclui a parte do convênio) → ferramentas de preço de item.
+- Ver/definir o preço de um item numa tabela → ferramenta de preço de item. Além do valor/desconto,
+  ela configura a **cobertura de convênio** do item: *coberto totalmente* (paciente paga R$ 0) ou
+  *coberto parcialmente/coparticipação* (informe a **parte do paciente** = copay e a **parte do
+  convênio**) — e isso vale para **procedimento e produto** (ex.: lente, medicação). Só para
+  **procedimento**, define também a **modalidade de autorização** exigida pela tabela do convênio
+  (não requer / automática online / prévia com auditoria / OPME com anexo).
 - Copiar os preços de uma tabela para outra (montar um convênio novo a partir de outro) → ferramenta de cópia de preços.
 - Saber quais convênios a clínica atende → ferramenta de convênios.
 - Consultar, montar, editar e aprovar orçamento (detalhe, pendências, gestão) → ferramentas de orçamento.
@@ -2953,8 +2989,8 @@ name: secretaria
 description: O papel de recepção do Fluxo Ideal — cadastrar e encontrar pacientes, agendar/remarcar/cancelar, ler a agenda do dia e a disponibilidade de horários, e acompanhar o histórico de relacionamento. Use para "quem é esse paciente?", "tem horário quinta?", "marca o retorno da Maria", "quem faltou hoje?".
 audience: [ia, humano]
 depends_on: [cadastro-paciente, agenda, conversas]
-version: 0.3.2
-updated: 2026-07-13
+version: 0.3.3
+updated: 2026-07-17
 ---
 
 # Secretária
@@ -3084,6 +3120,10 @@ auditado. Nunca despeje dados pessoais que não foram pedidos.
   cancelamento.
 - **Bloquear** a agenda (almoço, férias, feriado), inclusive **recorrente** → ferramenta de bloqueio.
 - Abrir um **encaixe / horário extra** → ferramenta de agenda extra.
+- **Agendamento privado** (interno/reservado que o paciente **não** deve ser avisado): ao marcar ou
+  abrir um encaixe, defina a **visibilidade** como *privada* → nenhuma notificação automática
+  (confirmação, lembrete, pedido de confirmação) é disparada ao paciente. Omitir = *pública* (padrão,
+  notifica normalmente). Use para horário bloqueado disfarçado, visita externa, compromisso da equipe.
 
 **Relacionamento**
 - Linha do tempo de um paciente ("o que já rolou com ele?") → ferramenta de histórico do cliente.

@@ -3,8 +3,8 @@ name: designer-documentos
 description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Use para entender "como esse documento fica" e para criar/editar/publicar um template com segurança.
 audience: [ia, humano]
 depends_on: [documentos-clinicos, templates, catalogo-documentos]
-version: 0.2.1
-updated: 2026-07-12
+version: 0.2.2
+updated: 2026-07-17
 ---
 
 # Designer de Documentos
@@ -147,6 +147,17 @@ Quatro ideias sustentam tudo:
 - **Listar/enviar/excluir assets** (logos/imagens) e **ver onde um asset é usado** (antes de excluir)
   → ferramenta que **gerencia assets** (+ consulta de uso). Excluir um asset **em uso** exige
   confirmação/forçar (o sistema mostra onde ele é referenciado).
+
+**Prontuário gráfico (diagramas anatômicos, #1129)**
+- **Navegar a biblioteca de diagramas** — as imagens-base (rosto, corpo, arcada dentária, olho…) sobre
+  as quais o profissional desenha os procedimentos no prontuário **gráfico/anotável**, filtrando por
+  **especialidade** e vendo os **globais da frota** + os do estabelecimento → ferramenta que **lista
+  os diagramas**. Traz só metadados (nome, escopo, dimensões, especialidade), não os bytes da imagem.
+- **Montar o tipo de prontuário gráfico** — criar/editar o **tipo de prontuário** cuja tela carrega um
+  **widget de diagrama** que referencia um desses diagramas → ferramenta de **gestão de tipo de
+  prontuário** (pré-visualiza antes de gravar; o sistema **valida** o widget). Aqui se define o
+  **molde**; o **desenho** em si é ato clínico no atendimento (fora do design). Esse mesmo tipo também
+  é gerível pelo papel `administrador-clinica`.
 
 **Modelos de sistema (Orçamento e TCLE)**
 - **Listar os modelos de sistema** e ver se estão publicados → ferramenta que **lista os templates de
