@@ -46,6 +46,7 @@ Cada skill serve aos dois públicos no mesmo arquivo — a diferença está na d
 | [indicadores](skills/indicadores/SKILL.md) | BI / gestão | dashboard executivo cross-domínio, significado dos KPIs, exportação de dados | ✅ |
 | [administrador-clinica](skills/administrador-clinica/SKILL.md) | Config da clínica | dados do estabelecimento, branding, profissionais, convênios | ✅ |
 | [gestor-tarefas](skills/gestor-tarefas/SKILL.md) | Tarefas internas | criar/atribuir/mover/buscar afazeres da equipe, minhas pendências | ✅ |
+| [jornada](skills/jornada/SKILL.md) | Jornada de Cuidado (caso longo) | configurar o modelo (fases/etapas/marcos), acompanhar (fase, pendências/SLA) e operar a jornada do paciente; marcos = tarefas; fase derivada | ✅ |
 | [reportar-e-sugerir](skills/reportar-e-sugerir/SKILL.md) | Qualidade (feedback ao sistema) | reportar bug (evidência esperado×obtido) / sugerir melhoria ou capacidade nova / acompanhar o desfecho — seguro, universal, sem PII | ✅ |
 
 ## Linguagem: humano vs. IA
