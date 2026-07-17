@@ -3,8 +3,8 @@ name: precificador
 description: O sistema de precificação do Fluxo Ideal — como se configura preço (catálogo, tabelas, condições e formas de pagamento, favoritos) e como isso converge em orçamento e venda. Use para entender "quanto custa", como montar um orçamento e por que os valores são o que são.
 audience: [ia, humano]
 depends_on: [precos, catalogo, convenios, condicoes-pagamento, orcamentos]
-version: 0.4.1
-updated: 2026-07-13
+version: 0.4.2
+updated: 2026-07-17
 ---
 
 # Precificador
@@ -64,7 +64,7 @@ Três ideias que sustentam tudo:
 **Cobertura**
 - **Cobertura de convênio**: convênio paga; o paciente pode ficar em **R$ 0**. Não é desconto nem gratuidade — há receita do convênio por trás.
 - **Coparticipação**: convênio paga uma parte, paciente outra. O item vale o **cheio**; muda o **rateio entre pagadores**, não o preço.
-- **Autorização de convênio**: alguns procedimentos exigem aval prévio da operadora. É **pré-requisito operacional**, não preço.
+- **Autorização de convênio**: alguns procedimentos exigem aval prévio da operadora. É **pré-requisito operacional**, não preço. Configura-se **por tabela de convênio**, em modalidades: *não requer*, *automática* (online/imediata), *prévia* (auditoria — solicitar e aguardar) ou *OPME* (com anexo de materiais).
 
 **Documentos e ajustes**
 - **Orçamento**: o documento que **junta** itens (snapshot), tabela, cobertura, condição de pagamento, validade e aceite do cliente. É a peça central da precificação.
@@ -88,7 +88,12 @@ Três ideias que sustentam tudo:
 **Hoje, por ferramenta:**
 - Ver/gerir procedimentos, produtos e pacotes → ferramentas de catálogo.
 - Ver e gerir as tabelas de preço → ferramentas de tabelas de preço.
-- Ver/definir o preço de um item numa tabela (inclui a parte do convênio) → ferramentas de preço de item.
+- Ver/definir o preço de um item numa tabela → ferramenta de preço de item. Além do valor/desconto,
+  ela configura a **cobertura de convênio** do item: *coberto totalmente* (paciente paga R$ 0) ou
+  *coberto parcialmente/coparticipação* (informe a **parte do paciente** = copay e a **parte do
+  convênio**) — e isso vale para **procedimento e produto** (ex.: lente, medicação). Só para
+  **procedimento**, define também a **modalidade de autorização** exigida pela tabela do convênio
+  (não requer / automática online / prévia com auditoria / OPME com anexo).
 - Copiar os preços de uma tabela para outra (montar um convênio novo a partir de outro) → ferramenta de cópia de preços.
 - Saber quais convênios a clínica atende → ferramenta de convênios.
 - Consultar, montar, editar e aprovar orçamento (detalhe, pendências, gestão) → ferramentas de orçamento.

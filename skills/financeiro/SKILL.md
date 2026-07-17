@@ -3,8 +3,8 @@ name: financeiro
 description: O ciclo do DINHEIRO depois da venda no Fluxo Ideal — receber (parcelas, contas a receber, aging/DSO/inadimplência), pagar (despesas, fornecedores, recorrências), o caixa (saldo, conferência, frente de caixa) e a saúde financeira (fluxo de caixa projetado, ponto de equilíbrio). Use para responder "quanto entrou / quanto a clínica deve / tem dinheiro em caixa / vai empatar?".
 audience: [ia, humano]
 depends_on: [pagamentos, contas-receber, contas-pagar, caixa, indicadores-financeiros]
-version: 0.3.1
-updated: 2026-07-13
+version: 0.3.2
+updated: 2026-07-17
 ---
 
 # Financeiro
@@ -183,6 +183,11 @@ Três ideias sustentam tudo:
 - Documentos que **aguardam assinatura** do paciente (orçamento/TCLE) e **enviar/revogar** o link →
   ferramentas de **assinatura**. Enviar link é **outward-facing** (o paciente recebe e-mail real) →
   confirme antes.
+- **O paciente recebeu/abriu o link que mandei?** (cobrar via link assinado depende disso) →
+  ferramenta de **aberturas do link de assinatura**: mostra se e **quantas vezes** aquele
+  orçamento/TCLE foi aberto, e quando. Por privacidade (LGPD), o IP vem **mascarado** e o aparelho
+  aparece só como família (iPhone/Android/…) — o suficiente para investigar sem expor dado pessoal.
+  `total = 0` significa que o paciente **nunca abriu** — é o caso clássico "diz que não recebeu".
 
 **Ordem mental para "como está o dinheiro da clínica":**
 saldo de caixa (conferido) → contas a receber (o que vai entrar, com aging) → contas a pagar
