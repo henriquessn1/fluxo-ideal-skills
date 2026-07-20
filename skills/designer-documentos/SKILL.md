@@ -1,10 +1,10 @@
 ---
 name: designer-documentos
-description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Cobre também os TEMPLATES DE TERMOS (o texto legal versionado de aceite/intercorrências/itens não inclusos/TCLE que entra nos orçamentos) — o CONTEÚDO, distinto da fôrma HTML. Use para entender "como esse documento fica", para criar/editar/publicar um template com segurança e para redigir/versionar os termos.
+description: O sistema de documentos do Fluxo Ideal — como se desenha, versiona, previsualiza e publica o MODELO de um documento (receita, atestado, laudo, orçamento, TCLE…) e como esses modelos viram documentos gerados por paciente. Cobre BLOCOS REUTILIZÁVEIS (cabeçalho/rodapé/assinatura/cláusula incluídos em vários modelos — sempre reaproveitar em vez de duplicar HTML), nascer um corpo do zero (inclusive migrar DOCX→HTML) e os TEMPLATES DE TERMOS (o texto legal versionado de aceite/intercorrências/itens não inclusos/TCLE que entra nos orçamentos) — o CONTEÚDO, distinto da fôrma HTML. Use para entender "como esse documento fica", para criar/editar/publicar um template com segurança, reaproveitar blocos e redigir/versionar os termos.
 audience: [ia, humano]
 depends_on: [documentos-clinicos, templates, catalogo-documentos, termos-orcamento]
-version: 0.3.1
-updated: 2026-07-19
+version: 0.4.0
+updated: 2026-07-20
 ---
 
 # Designer de Documentos
@@ -23,6 +23,10 @@ chegar à geração real sem quebrar o que já está em produção.
 - Cuidar dos **modelos de sistema** globais (Orçamento e TCLE).
 - **Redigir/versionar os termos** que entram nos orçamentos — o **texto** da declaração de aceite, das
   intercorrências, dos itens não inclusos, do **TCLE**: criar, editar, marcar o **padrão** do tipo.
+- **Reaproveitar um bloco** (cabeçalho, rodapé, assinatura, cláusula padrão) em vários documentos, em vez
+  de copiar o mesmo HTML em cada modelo.
+- **Começar um documento do zero** (quando não há um parecido para copiar) — inclusive **trazer um
+  documento antigo (DOCX) para o editor novo (HTML)**.
 
 ## Quando NÃO usar
 - **Enviar** o documento ao paciente (e-mail/WhatsApp/link) → skill de mensageria/envio.
@@ -54,7 +58,7 @@ no modelo sem estragar o que já está sendo usado:
          geração real ──► DOCUMENTO por paciente (fica no atendimento)
 ```
 
-Quatro ideias sustentam tudo:
+Algumas ideias sustentam tudo:
 
 - **Modelo ≠ documento gerado.** O template é a fôrma; o documento do paciente é o que sai da fôrma
   numa emissão. Mudar o template **não** reescreve documentos já gerados.
@@ -88,6 +92,17 @@ Quatro ideias sustentam tudo:
   ato jurídico). É a diferença entre **escrever a minuta** e **assinar o contrato**. Nos outros tipos
   essa segunda camada nem existe.
 
+- **Blocos reutilizáveis — não repita HTML.** Partes que se repetem em vários documentos — o **cabeçalho**
+  da clínica, o **rodapé**, o **bloco de assinatura**, uma **cláusula padrão** — **não** devem ser copiadas
+  em cada modelo. Elas viram **blocos reutilizáveis** próprios, e cada modelo os **inclui** pelo nome (uma
+  chamada de inclusão no HTML, em vez do HTML colado). Ganhos: mudar o cabeçalho **num lugar só** atualiza
+  **todos** os documentos que o incluem, e some o risco de versões divergentes do mesmo pedaço. Um bloco é
+  um modelo como outro — só que **marcado como reutilizável** (não é um documento completo, então **não**
+  aparece para emissão) e é chamado de dentro dos outros. **🧩 Regra de ouro do design: antes de escrever
+  um trecho de HTML, procure um bloco reutilizável que já o resolva; se um trecho vai aparecer em mais de
+  um documento, transforme-o num bloco e inclua-o — nunca duplique.** Ao **inspecionar as variáveis** de um
+  modelo, as variáveis dos blocos incluídos **vêm junto** (o sistema resolve o bloco publicado ao renderizar).
+
 **Distinção digital × impresso:** um vínculo pode ter um modelo para a via **digital** e outro para a
 **impressa**. São dois templates para o mesmo tipo, escolhidos conforme a saída.
 
@@ -114,6 +129,15 @@ Quatro ideias sustentam tudo:
 - **Publicação**: promover uma versão a **oficial** — passa a ser a usada de fato. Alcance amplo.
 - **Preview / simulação**: renderização fiel do modelo com **dados fictícios** e marca d'água de amostra,
   **sem efeito** (não grava nada, não emite nada). É a rede de segurança antes de publicar/ativar.
+
+**Blocos reutilizáveis**
+- **Bloco reutilizável**: um modelo HTML **marcado como reutilizável** — um pedaço (cabeçalho, rodapé,
+  bloco de assinatura, cláusula padrão) feito para ser **incluído** em outros modelos, **não** emitido
+  sozinho (por isso não aparece nos seletores de emissão). Editar/publicar o bloco reflete em **todos** os
+  modelos que o incluem. Também é versionado (rascunho → publicado), como qualquer template.
+- **Inclusão**: um modelo completo **puxa** um bloco reutilizável pelo nome; ao renderizar, o sistema
+  resolve a **versão publicada** do bloco. As **variáveis** que o bloco espera contam junto com as do
+  modelo (a inspeção de variáveis do modelo já traz as dos blocos incluídos).
 
 **Assets**
 - **Asset**: imagem/logo usada no design (ex.: logo no cabeçalho). Um asset em uso não some sem confirmação
@@ -178,6 +202,15 @@ Quatro ideias sustentam tudo:
   (nome, rótulo, tipo, obrigatório, **grupo**, opções) — passe a estrutura **como ela é**, sem inventar
   formato. Ao **ler** o template, os **campos de tela** vêm junto (inspeção). A tela de emissão **já
   renderiza** esses campos — não é preciso mexer no front.
+- **Nascer um corpo/bloco novo do zero** (um modelo HTML novo, ou um **bloco reutilizável**) → ferramenta
+  que **cria um corpo de template**. É como você começa um documento que **não** tem um parecido para
+  copiar — por exemplo, **trazer um documento antigo (DOCX) para o HTML** — ou como você cria um **bloco
+  reutilizável** (cabeçalho/rodapé/assinatura/cláusula) para depois **incluí-lo** nos modelos. O corpo
+  nasce com um conteúdo inicial em **rascunho** (publique quando estiver pronto). Depois é só **vincular**
+  ao tipo (se for um documento) ou **incluí-lo** de outros modelos (se for um bloco).
+  > **Clonar × criar do zero:** se **já existe** um modelo parecido, **clone-o** (a cópia é
+  > **independente** — editar o clone **não** mexe no original) e ajuste. Só **crie do zero** quando não há
+  > de onde clonar (ex.: migração de DOCX). Em ambos, **reaproveite os blocos** que já existirem.
 - **Montar/gerir um modelo (bundle)** — o invólucro que junta corpo **digital** + corpo **impresso** +
   estrutura de dados como uma unidade → ferramentas de **modelo** (listar/gerir). Só HTML/DB — **DOCX e
   HTML-em-disco ficam fora**.
@@ -255,6 +288,24 @@ Quatro ideias sustentam tudo:
 3. **Desenhe o conteúdo** do template referenciando os dados do paciente **+** esses campos.
 4. **Simule** e **publique**. A **tela de emissão já mostra** os campos para o operador digitar.
 
+### Reaproveitar um bloco (cabeçalho/rodapé/assinatura) em vários documentos
+1. **Procure primeiro** se o bloco já existe como **bloco reutilizável** (liste os modelos; blocos são os
+   marcados como reutilizáveis). Se existir, **reutilize** — não recrie.
+2. Se ainda não existe, **nasça o bloco do zero** marcado como **reutilizável** (conteúdo do bloco →
+   rascunho → **simule** → **publique**).
+3. Em cada modelo que deve usá-lo, **inclua o bloco** pelo nome no rascunho do modelo (em vez de colar o
+   HTML). **Simule** para conferir o render com o bloco incluído e **publique**.
+4. Dali em diante, editar/publicar **o bloco** atualiza **todos** os modelos que o incluem — sem tocar em
+   cada um.
+
+### Trazer um documento antigo (DOCX) para o editor novo (HTML)
+1. **Nasça um corpo novo do zero** (criar corpo de template) — é o ponto de partida quando não há um modelo
+   parecido para clonar. (Se houver um parecido, **clone-o** — a cópia é independente.)
+2. Traga o conteúdo como **rascunho** e **reaproveite os blocos** que já existirem (cabeçalho/rodapé/
+   assinatura) em vez de recriá-los; extraia para **bloco** o que for reaparecer em outros documentos.
+3. **Simule**, ajuste, **publique**.
+4. **Vincule** ao tipo e **ative** quando estiver pronto — só então fica emissível.
+
 ### Trocar um logo/imagem do design
 1. **Envie** o asset novo (ou liste os existentes).
 2. **Ajuste o rascunho** do template para referenciar o asset.
@@ -291,6 +342,11 @@ tipo/modelo aplicável → ler a versão atual → **rascunho** com a mudança �
   termo** (a tela **Templates de Termos**); a **fôrma HTML** é o template de sistema. Editar um **não** mexe no outro.
 - **Termo: mudar o texto cria versão nova** — a anterior fica no histórico; documento já assinado guarda
   o snapshot. **Um padrão por tipo** — definir outro desmarca o anterior.
+- **Reaproveite blocos, não duplique HTML** — cabeçalho/rodapé/assinatura/cláusula que se repete vira um
+  **bloco reutilizável** incluído nos modelos; muda **num lugar**, reflete em **todos**. Antes de escrever
+  HTML novo, **procure um bloco** que já resolva; se um trecho vai reaparecer, **transforme-o em bloco**.
+- **Clonar dá cópia independente** — clonar um modelo copia os corpos como **cópias próprias**; editar o
+  clone **não** altera o original. Só **crie do zero** quando não há de onde clonar (ex.: migração de DOCX).
 - **Digital e impresso podem ter modelos distintos** para o mesmo tipo.
 - **Asset em uso não some por acidente** — exclusão avisa onde é referenciado e exige confirmação/forçar.
 - **Leitura de documento do paciente é só listagem** — nunca link de download; abrir é pela Central.
