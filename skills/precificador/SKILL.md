@@ -2,9 +2,9 @@
 name: precificador
 description: O sistema de precificação do Fluxo Ideal — como se configura preço (catálogo, tabelas, condições e formas de pagamento, favoritos) e como isso converge em orçamento e venda. Use para entender "quanto custa", como montar um orçamento e por que os valores são o que são.
 audience: [ia, humano]
-depends_on: [precos, catalogo, convenios, condicoes-pagamento, orcamentos]
-version: 0.4.2
-updated: 2026-07-17
+depends_on: [precos, catalogo, convenios, condicoes-pagamento, orcamentos, termos-orcamento]
+version: 0.4.3
+updated: 2026-07-19
 ---
 
 # Precificador
@@ -67,7 +67,8 @@ Três ideias que sustentam tudo:
 - **Autorização de convênio**: alguns procedimentos exigem aval prévio da operadora. É **pré-requisito operacional**, não preço. Configura-se **por tabela de convênio**, em modalidades: *não requer*, *automática* (online/imediata), *prévia* (auditoria — solicitar e aguardar) ou *OPME* (com anexo de materiais).
 
 **Documentos e ajustes**
-- **Orçamento**: o documento que **junta** itens (snapshot), tabela, cobertura, condição de pagamento, validade e aceite do cliente. É a peça central da precificação.
+- **Orçamento**: o documento que **junta** itens (snapshot), tabela, cobertura, condição de pagamento, validade, **termos** e aceite do cliente. É a peça central da precificação.
+- **Termo do orçamento**: o **texto legal** que acompanha o orçamento — declaração de aceite, intercorrências, itens não inclusos, **TCLE** (consentimento) ou outros. O orçamento **seleciona** um template de termo por tipo (há um **padrão** por tipo). Você **escolhe** qual termo entra; **redigir/versionar o texto** dos termos é da skill `designer-documentos` (tela **Templates de Termos**, nas configurações).
 - **Venda**: orçamento aprovado/confirmado, pronto para o ciclo de pagamento.
 - **Desconto / cortesia**: redução dentro do limite da tabela / item incluído sem custo (isenção comercial).
 - **No-show**: falta pode gerar **multa configurável** (confirmável, perdoável ou ajustável por quem tem alçada).
@@ -97,6 +98,7 @@ Três ideias que sustentam tudo:
 - Copiar os preços de uma tabela para outra (montar um convênio novo a partir de outro) → ferramenta de cópia de preços.
 - Saber quais convênios a clínica atende → ferramenta de convênios.
 - Consultar, montar, editar e aprovar orçamento (detalhe, pendências, gestão) → ferramentas de orçamento.
+- Ver os **termos** disponíveis para anexar ao orçamento (por tipo, e qual é o **padrão**) → ferramenta que **lista os templates de termos**. Você **seleciona** o termo; **redigir/versionar o texto** é `designer-documentos`.
 - Simular uma venda (memória de cálculo), simular o preço de um pacote, criar a venda a partir da simulação, converter um orçamento aprovado em venda e tocar o ciclo da venda → ferramentas de venda.
 - Definir condições e formas de pagamento e simular o parcelamento → ferramentas de pagamento.
 - Fazer o split de coparticipação e ancorar a autorização de convênio no item → ferramentas de pagador/autorização.
